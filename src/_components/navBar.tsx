@@ -4,12 +4,16 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AiFillHome } from "react-icons/ai";
 import { RiCalendarScheduleFill } from "react-icons/ri";
-import { FiFlag } from "react-icons/fi";
+import { FiFlag, FiMoon, FiSun } from "react-icons/fi";
 import { HiOutlineSquares2X2 } from "react-icons/hi2";
 import { FaBusAlt } from "react-icons/fa";
-import { GiArtificialIntelligence } from "react-icons/gi";
-import { CiSquareCheck, CiDollar } from "react-icons/ci";
+import { CiSquareCheck } from "react-icons/ci";
 import { usePathname } from "next/navigation";
+import { MdAttachMoney } from "react-icons/md";
+import { useTheme } from "next-themes";
+import Spinner from "./Spinner";
+import { Switch } from "~/components/ui/switch";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
 const useWindowDimensions = () => {
   const isClient = typeof window === "object";
@@ -56,7 +60,7 @@ const NavBarLink = ({
   return (
     <li>
       <Link
-        className={`flex ${small ? "w-[40px]" : ""} text-md group mt-4 items-center gap-x-3.5 rounded-lg px-2.5 py-2 font-sans font-semibold text-gray-500 hover:bg-bgSecondary hover:text-primary`}
+        className={`flex ${small ? "w-[40px]" : ""} text-md text-navLinks group mt-4 items-center gap-x-3.5 rounded-lg px-2.5 py-2 font-sans font-semibold hover:bg-bgSecondary hover:text-primary`}
         href={href}
       >
         <Icon
@@ -64,12 +68,10 @@ const NavBarLink = ({
             isActive
               ? `${small ? "" : "border-l-2"} border-primary text-primary`
               : ""
-          } text-black`}
+          }`}
         />
         {!small && (
-          <p
-            className={`translate-y-0.5 ${isActive ? "text-primary" : ""} text-black`}
-          >
+          <p className={`translate-y-0.5 ${isActive ? "text-primary" : ""}`}>
             {label}
           </p>
         )}
@@ -79,10 +81,24 @@ const NavBarLink = ({
 };
 
 const NavBar = () => {
+  const [profile, setProfile] = useState(false);
+  const toggleProfile = () => {
+    setProfile(!profile);
+  };
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+  const { theme, setTheme } = useTheme();
   const url = usePathname();
   const [small, setSmall] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isOpen5, setIsOpen5] = useState(false);
+
+  const handleThemeChange = (value: boolean) => {
+    setTheme(value ? "dark" : "light");
+  };
   const toggleNavbar5 = () => {
     setIsOpen5(!isOpen5);
   };
@@ -113,11 +129,17 @@ const NavBar = () => {
     { href: "/", icon: AiFillHome, label: "Home" },
     { href: "/schedule", icon: RiCalendarScheduleFill, label: "My Schedule" },
     { href: "/bus", icon: FaBusAlt, label: "Bus Tracker" },
-    { href: "/finance", icon: CiDollar, label: "Finance" },
-    { href: "/ai", icon: GiArtificialIntelligence, label: "AI Exercise" },
+    { href: "/finance", icon: MdAttachMoney, label: "Finance" },
     { href: "/complaint", icon: FiFlag, label: "Complaint" },
     { href: "/attendance", icon: CiSquareCheck, label: "My attendance" },
   ];
+
+  if (!isClient)
+    return (
+      <div className="absolute left-0 top-0 z-[9999] flex h-screen w-full items-center justify-center bg-bgPrimary">
+        <Spinner />
+      </div>
+    );
 
   return (
     <>
@@ -166,9 +188,14 @@ const NavBar = () => {
                 <div className="hidden sm:block"></div>
 
                 <div className="flex flex-row items-center justify-end gap-2">
+                  <Switch
+                    checked={theme === "dark"} 
+                    onCheckedChange={handleThemeChange} 
+                    className="mx-1" 
+                  />
                   <Link
                     href="/notifies"
-                    className="text-textPrimary inline-flex h-[2.375rem] w-[2.375rem] items-center justify-center gap-x-2 rounded-full text-sm font-semibold hover:bg-bgSecondary disabled:pointer-events-none disabled:opacity-50"
+                    className="inline-flex h-[2.375rem] w-[2.375rem] items-center justify-center gap-x-2 rounded-full text-sm font-semibold text-textPrimary hover:bg-bgSecondary disabled:pointer-events-none disabled:opacity-50"
                   >
                     <svg
                       className="size-4 flex-shrink-0"
@@ -188,10 +215,10 @@ const NavBar = () => {
                   </Link>
                   <Link
                     href="/chat"
-                    className="text-textPrimary inline-flex h-[2.375rem] w-[2.375rem] items-center justify-center gap-x-2 rounded-full text-sm font-semibold hover:bg-bgSecondary disabled:pointer-events-none disabled:opacity-50"
+                    className="inline-flex h-[2.375rem] w-[2.375rem] items-center justify-center gap-x-2 rounded-full text-sm font-semibold text-textPrimary hover:bg-bgSecondary disabled:pointer-events-none disabled:opacity-50"
                   >
                     <svg
-                      className="text-textPrimary h-5 w-5"
+                      className="h-5 w-5 text-textPrimary"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -205,15 +232,87 @@ const NavBar = () => {
                     </svg>
                   </Link>
 
-                  <div className="hs-dropdown relative inline-flex [--placement:bottom-right]"></div>
+                  <div className="hs-dropdown relative inline-flex [--placement:bottom-right]">
+                    <DropdownMenu.Root>
+                      <DropdownMenu.Trigger asChild>
+                        <button
+                          onClick={toggleProfile}
+                          id="hs-dropdown-with-header"
+                          type="button"
+                          className="border-bgSeconday hover:bg-thead inline-flex h-[2.375rem] w-[2.375rem] items-center justify-center gap-x-2 rounded-full border text-sm font-semibold text-gray-800 outline-none disabled:pointer-events-none disabled:opacity-50"
+                        >
+                          <div>
+                            <img
+                              className="inline-block h-[38px] w-[38px] rounded-full ring-2 ring-bgSecondary"
+                              src="/images/userr.png"
+                              alt="User Avatar"
+                            />
+                          </div>
+                        </button>
+                      </DropdownMenu.Trigger>
+
+                      {profile && (
+                        <DropdownMenu.Content
+                          className={`text-textPrimary fixed right-[20px] top-[20px] min-w-60 rounded-lg bg-bgPrimary p-2 shadow-md`}
+                          aria-labelledby="hs-dropdown-with-header"
+                          align="end"
+                          sideOffset={5}
+                        >
+                          <div className="rounded-t-lg bg-bgPrimary px-5 py-3">
+                            <p className="text-textPrimary text-sm">
+                              Signed in as
+                            </p>
+                            <p className="text-textPrimary text-sm font-medium">
+                              Example@gmail.com
+                            </p>
+                          </div>
+                          <div className="mt-2 py-2">
+                            <DropdownMenu.Item asChild>
+                              <Link
+                                className="text-textPrimary flex items-center gap-x-3.5 rounded-lg border-none px-3 py-2 text-sm outline-none hover:bg-bgSecondary"
+                                href="/profile"
+                              >
+                                <svg
+                                  className="h-4 w-4 flex-shrink-0"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                  <circle cx="9" cy="7" r="4" />
+                                  <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                </svg>
+                                Profile
+                              </Link>
+                            </DropdownMenu.Item>
+                            <DropdownMenu.Item asChild>
+                              <a
+                                className="text-textPrimary flex items-center gap-x-3.5 rounded-lg border-none px-3 py-2 text-sm outline-none hover:bg-error hover:text-white"
+                                href="/login"
+                              >
+                                Sign out
+                              </a>
+                            </DropdownMenu.Item>
+                          </div>
+                        </DropdownMenu.Content>
+                      )}
+                    </DropdownMenu.Root>
+                  </div>
                 </div>
               </div>
             </nav>
           </header>
-          <div className="border-borderPrimary sticky inset-x-0 top-0 z-20 border-y bg-bgPrimary px-4 sm:px-6 md:px-8 lg:hidden">
+          <div className="sticky inset-x-0 top-0 z-20 border-y border-borderPrimary bg-bgPrimary px-4 sm:px-6 md:px-8 lg:hidden">
             <div className="flex items-center justify-between py-2">
               <ol className="ms-3 flex items-center whitespace-nowrap">
-                <li className="text-textPrimary flex items-center text-sm">
+                <li className="flex items-center text-sm text-textPrimary">
                   {/* Breadcrumb or other content */}
                 </li>
               </ol>
@@ -221,7 +320,7 @@ const NavBar = () => {
               <button
                 onClick={OpenSideBar}
                 type="button"
-                className="border-borderPrimary flex items-center justify-center gap-x-1.5 rounded-lg border px-3 py-2 text-xs text-gray-500 hover:text-gray-600"
+                className="flex items-center justify-center gap-x-1.5 rounded-lg border border-borderPrimary px-3 py-2 text-xs text-gray-500 hover:text-gray-600"
                 data-hs-overlay="#application-sidebar"
                 aria-controls="application-sidebar"
                 aria-label="Sidebar"
@@ -275,7 +374,7 @@ const NavBar = () => {
                 {!small && (
                   <button onClick={toggleNavbarSmall}>
                     <svg
-                      className="h-8 w-8 text-black"
+                      className="h-8 w-8 text-textPrimary"
                       width="24"
                       height="24"
                       viewBox="0 0 24 24"
@@ -307,7 +406,7 @@ const NavBar = () => {
                     {small && (
                       <button onClick={toggleNavbarSmall}>
                         <svg
-                          className="h-6 w-6 text-black"
+                          className="h-6 w-6 text-textPrimary"
                           width="24"
                           height="24"
                           viewBox="0 0 24 24"
@@ -339,11 +438,11 @@ const NavBar = () => {
                       className={`flex ${!small ? "w-full" : ""} text-md group mt-4 items-center gap-x-3.5 rounded-lg px-2.5 py-2 font-sans font-bold text-secondary hover:bg-bgSecondary hover:text-primary`}
                     >
                       <HiOutlineSquares2X2
-                        className={`h-10 w-10 ${small ? "h-6 w-6" : "pl-4"} ${isOpen5 ? `${small ? "" : "border-l-2"} border-primary text-primary` : ""} text-black`}
+                        className={`h-10 w-10 ${small ? "h-6 w-6" : "pl-4"} ${isOpen5 ? `${small ? "" : "border-l-2"} border-primary text-primary` : ""} text-textPrimary`}
                       />
                       {!small && (
                         <p
-                          className={`text-black ${isOpen5 ? "text-primary" : ""}`}
+                          className={`text-textPrimary ${isOpen5 ? "text-primary" : ""}`}
                         >
                           Menu
                         </p>
@@ -382,7 +481,7 @@ const NavBar = () => {
                           Exam{" "}
                         </Link>
                         <Link
-                          className={`hover:text-primary ${url === "/exercises" ? "text-primary" : ""}`}
+                          className={`hover:text-primary ${url === "/exercises" ? "text-primary" : "textPrimary"}`}
                           href="/exercises"
                         >
                           {" "}
