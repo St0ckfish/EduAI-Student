@@ -235,7 +235,7 @@ export default function Home() {
                 <Text>Class Participation</Text>
               </div>
               <div className="flex items-center gap-1">
-                <FaCircle size={8} className="text-lavender" />
+                <FaCircle size={8} className="text-lavender" />p
                 <Text>Student Behavior</Text>
               </div>
             </div>
