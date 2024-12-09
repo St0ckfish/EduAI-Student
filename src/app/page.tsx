@@ -8,6 +8,43 @@ import { Calendar } from "~/components/ui/calendar";
 import { FaCircle } from "react-icons/fa";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import Image from "next/image";
+<<<<<<< HEAD
+=======
+import { TrendingUp } from "lucide-react"
+import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "~/components/ui/chart"
+const chartData = [
+  { month: "January", gpa: 186, attendance: 80, class: 20, behavior: 54 },
+  { month: "February", gpa: 305, attendance: 200, class: 24, behavior: 56  },
+  { month: "March", gpa: 237, attendance: 120, class: 64, behavior: 65  },
+  { month: "April", gpa: 73, attendance: 190, class: 54, behavior: 87  },
+  { month: "May", gpa: 209, attendance: 130, class: 87, behavior: 48  },
+  { month: "June", gpa: 214, attendance: 140, class: 68, behavior: 87  },
+]
+const chartConfig = {
+  gpa: {
+    label: "GPA",
+    color: "#76E2AD",
+  },
+  attendance: {
+    label: "Attendance",
+    color: "#EC7C73",
+  },
+  class: {
+    label: "Class Participation",
+    color: "#F4BE22",
+  },
+  behavior: {
+    label: "Student Behavior",
+    color: "#AC94EC",
+  },
+} satisfies ChartConfig
+>>>>>>> 040f133 (setup project)
 
 export default function Home() {
   function CalendarDemo() {
@@ -235,15 +272,80 @@ export default function Home() {
                 <Text>Class Participation</Text>
               </div>
               <div className="flex items-center gap-1">
+<<<<<<< HEAD
                 <FaCircle size={8} className="text-lavender" />p
+=======
+                <FaCircle size={8} className="text-lavender" />
+>>>>>>> 040f133 (setup project)
                 <Text>Student Behavior</Text>
               </div>
             </div>
           </div>
           <div className="text-center">
+<<<<<<< HEAD
             <Text font={"bold"} size={"4xl"} className="mt-10">
               Chart
             </Text>
+=======
+        <ChartContainer config={chartConfig}>
+          <LineChart
+            accessibilityLayer
+            data={chartData}
+            margin={{
+              left: 12,
+              right: 12,
+            }}
+          >
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="month"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tickFormatter={(value) => value.slice(0, 3)}
+            />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+            <Line
+              dataKey="gpa"
+              type="monotone"
+              stroke="var(--color-gpa)"
+              strokeWidth={2}
+              dot={false}
+            />
+            <Line
+              dataKey="attendance"
+              type="monotone"
+              stroke="var(--color-attendance)"
+              strokeWidth={2}
+              dot={false}
+            />
+            <Line
+              dataKey="class"
+              type="monotone"
+              stroke="var(--color-class)"
+              strokeWidth={2}
+              dot={false}
+            />
+            <Line
+              dataKey="behavior"
+              type="monotone"
+              stroke="var(--color-behavior)"
+              strokeWidth={2}
+              dot={false}
+            />
+          </LineChart>
+        </ChartContainer>
+        <div className="flex w-full items-start gap-2 text-sm">
+          <div className="grid gap-2">
+            <div className="flex items-center gap-2 font-medium leading-none">
+              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+            </div>
+            <div className="flex items-center gap-2 leading-none text-muted-foreground">
+              Showing total visitors for the last 6 months
+            </div>
+          </div>
+        </div>
+>>>>>>> 040f133 (setup project)
           </div>
         </Box>
         <Box>
