@@ -54,13 +54,8 @@
   },
   "devDependencies": {
     "@types/eslint": "^8.56.10",
-<<<<<<< HEAD
-    "@types/next-auth": "^3.15.0",
-    "@types/js-cookie": "^3.0.6",
-=======
     "@types/js-cookie": "^3.0.6",
     "@types/next-auth": "^3.15.0",
->>>>>>> 040f133 (setup project)
     "@types/node": "^20.14.10",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
