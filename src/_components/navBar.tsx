@@ -3,28 +3,16 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AiFillHome } from "react-icons/ai";
-<<<<<<< HEAD
-import { RiCalendarScheduleFill } from "react-icons/ri";
-import { FiFlag, FiMoon, FiSun } from "react-icons/fi";
-=======
 import { FaNewspaper } from "react-icons/fa6";
->>>>>>> 040f133 (setup project)
 import { HiOutlineSquares2X2 } from "react-icons/hi2";
 import { FaBusAlt } from "react-icons/fa";
 import { CiSquareCheck } from "react-icons/ci";
 import { usePathname } from "next/navigation";
-<<<<<<< HEAD
-import { MdAttachMoney } from "react-icons/md";
-import { useTheme } from "next-themes";
-import Spinner from "./Spinner";
-import { Switch } from "~/components/ui/switch";
-=======
 import { RiRobot2Fill } from "react-icons/ri";
 import { useTheme } from "next-themes";
 import Spinner from "./Spinner";
 import { Switch } from "~/components/ui/switch";
 import Cookie from "js-cookie";
->>>>>>> 040f133 (setup project)
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
 const useWindowDimensions = () => {
@@ -145,14 +133,8 @@ const NavBar = () => {
     { href: "/", icon: AiFillHome, label: "Home" },
     { href: "/ai", icon: RiRobot2Fill, label: "AI" },
     { href: "/bus", icon: FaBusAlt, label: "Bus Tracker" },
-<<<<<<< HEAD
-    { href: "/finance", icon: MdAttachMoney, label: "Finance" },
-    { href: "/complaint", icon: FiFlag, label: "Complaint" },
-    { href: "/attendance", icon: CiSquareCheck, label: "My attendance" },
-=======
     { href: "/news", icon: FaNewspaper, label: "News" },
     { href: "/evaluate", icon: CiSquareCheck, label: "Evaluate Teachers" },
->>>>>>> 040f133 (setup project)
   ];
 
   if (!isClient)
@@ -315,10 +297,7 @@ const NavBar = () => {
                             </DropdownMenu.Item>
                             <DropdownMenu.Item asChild>
                               <a
-<<<<<<< HEAD
-=======
                               onClick={()=> DeleteCookie()}
->>>>>>> 040f133 (setup project)
                                 className="text-textPrimary flex items-center gap-x-3.5 rounded-lg border-none px-3 py-2 text-sm outline-none hover:bg-error hover:text-white"
                                 href="/login"
                               >
@@ -500,11 +479,7 @@ const NavBar = () => {
                         </Link>
                         <Link
                           className={`hover:text-primary ${url === "/exercises" ? "text-primary" : "textPrimary"}`}
-<<<<<<< HEAD
-                          href="/exercises"
-=======
                           href="/material"
->>>>>>> 040f133 (setup project)
                         >
                           {" "}
                           Material{" "}

@@ -8,8 +8,6 @@ import { Calendar } from "~/components/ui/calendar";
 import { FaCircle } from "react-icons/fa";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import Image from "next/image";
-<<<<<<< HEAD
-=======
 import { TrendingUp } from "lucide-react"
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
 import {
@@ -44,7 +42,6 @@ const chartConfig = {
     color: "#AC94EC",
   },
 } satisfies ChartConfig
->>>>>>> 040f133 (setup project)
 
 export default function Home() {
   function CalendarDemo() {
@@ -272,21 +269,12 @@ export default function Home() {
                 <Text>Class Participation</Text>
               </div>
               <div className="flex items-center gap-1">
-<<<<<<< HEAD
-                <FaCircle size={8} className="text-lavender" />p
-=======
                 <FaCircle size={8} className="text-lavender" />
->>>>>>> 040f133 (setup project)
                 <Text>Student Behavior</Text>
               </div>
             </div>
           </div>
           <div className="text-center">
-<<<<<<< HEAD
-            <Text font={"bold"} size={"4xl"} className="mt-10">
-              Chart
-            </Text>
-=======
         <ChartContainer config={chartConfig}>
           <LineChart
             accessibilityLayer
@@ -345,7 +333,6 @@ export default function Home() {
             </div>
           </div>
         </div>
->>>>>>> 040f133 (setup project)
           </div>
         </Box>
         <Box>

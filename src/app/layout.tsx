@@ -7,12 +7,9 @@ import "react-toastify/dist/ReactToastify.css";
 import Notification from "~/_components/Notifications";
 import { usePathname } from "next/navigation";
 import ThemeProvider from "./providers/themeProvider";
-<<<<<<< HEAD
-=======
 import WithAuth from "~/_components/Auth/WithAuth";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
->>>>>>> 040f133 (setup project)
 
 export default function RootLayout({
   children,
@@ -36,12 +33,6 @@ export default function RootLayout({
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
       </head>
       <body className="bg-bgSecondary">
-<<<<<<< HEAD
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {!isLoginPage && <NavBar />}
-          <TRPCReactProvider>{children}</TRPCReactProvider>
-        </ThemeProvider>
-=======
       <WithAuth excludePaths={['/login', '/signup']}>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
@@ -51,7 +42,6 @@ export default function RootLayout({
         </ThemeProvider>
       </QueryClientProvider>
       </WithAuth>
->>>>>>> 040f133 (setup project)
       </body>
     </html>
   );

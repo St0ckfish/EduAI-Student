@@ -11,11 +11,7 @@ import {
   getAllRegions,
   login,
 } from "../features/auth";
-<<<<<<< HEAD
-import type { Advice } from "../../types";
-=======
 import type { Advice, SignUpFormData } from "../../types";
->>>>>>> 040f133 (setup project)
 
 export const useGetAllCountries = (options?: UseQueryOptions<unknown>) => {
   return useQuery<unknown>({
@@ -50,17 +46,10 @@ export const useGetAllRegions = (options?: UseQueryOptions<unknown>) => {
 };
 //
 export const useSignUp = (
-<<<<<<< HEAD
-  options?: UseMutationOptions<Advice, Error, Partial<Advice>>,
-) => {
-  const queryClient = useQueryClient();
-  return useMutation<Advice, Error, Partial<Advice>>({
-=======
   options?: UseMutationOptions<SignUpFormData, Error, Partial<SignUpFormData>>,
 ) => {
   const queryClient = useQueryClient();
   return useMutation<SignUpFormData, Error, Partial<SignUpFormData>>({
->>>>>>> 040f133 (setup project)
     mutationFn: signUp,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["auth"] });
