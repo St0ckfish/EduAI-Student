@@ -35,3 +35,107 @@ export type Advice = {
     countryCode: string;
     number: string;
   }
+  export type ExamFormData = {
+    name: string;
+    examDate: string;
+    examBeginning: string;
+    examEnding: string;
+    teacherId: number;
+    courseId: number;
+    classroomId: number;
+    examTypeId: number;
+  }
+  
+  
+  export type ExamResult = {
+    id: number;
+    examId: number;
+    studentId: number;
+    studentName: string;
+    status: "PASSED" | "FAILED"; 
+    score: number;
+    scoreDate: string;
+  }
+  
+  export type ExamResultsResponse = ExamResult[];
+  export type Exam = {
+    id: number;
+    examDate: string;
+    examBeginning: string;
+    examEnding: string;
+    examName: string;
+    courseName: string;
+    className: string;
+    examTypeName: string;
+    examLegalTypeName: string;
+  };
+  
+  // Type for the exam list response
+  export type Fee = {
+    invoiceId: number;
+    semesterName: string;
+    creationDate: string;
+    updateDate: string;
+    dueDate: string;
+    paidAmount: number;
+    totalFeesAmount: number;
+    feesCurrency: string;
+    paymentStatus: string;
+    discountAmount: number;
+  };
+  export type ExamListResponse = Exam[];
+  
+  export type Upcoming_Previous_Exams = {
+    success: boolean;
+    message: string;
+    data: Fee[];
+  };
+  export type Student = {
+    studentId: number;
+    studentName: string;
+    studyLevel: string;
+    hasPhoto: boolean;
+    photoLink: string | null;
+    chatId: string | null;
+    score?: number;
+    passed?: boolean;
+  };
+  
+  export type StudentsResponse = {
+    success: boolean;
+    message: string;
+    data: {
+      content: Student[];
+      totalElementsCount: number;
+      totalPagesCount: number;
+      pageElementsCount: number;
+      pageSize: number;
+      pageNumber: number;
+      firstPage: boolean;
+      lastPage: boolean;
+      emptyPage: boolean;
+      sortedPage: boolean;
+    };
+  };
+  
+  export type StudentsWithGradesResponse = {
+    success: boolean;
+    message: string;
+    data: {
+      students: Student[];
+      finalScore: number;
+    };
+  };
+  export type AcademicYear = {
+    id: number;
+    name: string;
+    active: boolean;
+  };
+  
+  // Type for the full API response
+  export type AcademicYearResponse = {
+    success: boolean;
+    message: string;
+    data: AcademicYear[];
+  };
+  
