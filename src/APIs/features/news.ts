@@ -6,3 +6,10 @@ export const fetchAllNews = async (): Promise<any> => {
   );
   return response.data;
 };
+
+export const likePost = async (postId: number, liked: boolean): Promise<void> => {
+  const response = await axiosInstance.put(`/api/v1/post/${postId}/like?liked=${liked}`, {
+    liked,
+  });
+  return response.data; 
+};
