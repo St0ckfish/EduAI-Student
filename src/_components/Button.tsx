@@ -23,7 +23,7 @@ type ButtonAsLink = {
 type ButtonProps = {
   children: ReactNode;
   className?: string;
-  theme?: "outline";
+  theme?: "outline" | "solid";
   color?: "error" | "primary" | "secondary";
 } & (ButtonAsButton | ButtonAsAnchor | ButtonAsLink);
 

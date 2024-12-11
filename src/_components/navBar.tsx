@@ -3,16 +3,16 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AiFillHome } from "react-icons/ai";
-import { RiCalendarScheduleFill } from "react-icons/ri";
-import { FiFlag, FiMoon, FiSun } from "react-icons/fi";
+import { FaNewspaper } from "react-icons/fa6";
 import { HiOutlineSquares2X2 } from "react-icons/hi2";
 import { FaBusAlt } from "react-icons/fa";
 import { CiSquareCheck } from "react-icons/ci";
 import { usePathname } from "next/navigation";
-import { MdAttachMoney } from "react-icons/md";
+import { RiRobot2Fill } from "react-icons/ri";
 import { useTheme } from "next-themes";
 import Spinner from "./Spinner";
 import { Switch } from "~/components/ui/switch";
+import Cookie from "js-cookie";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
 const useWindowDimensions = () => {
@@ -117,6 +117,10 @@ const NavBar = () => {
     setIsOpen(!isOpen);
   };
 
+  const DeleteCookie = () => {
+    Cookie.remove("token");
+  };
+
   const { width } = useWindowDimensions();
 
   useEffect(() => {
@@ -127,11 +131,10 @@ const NavBar = () => {
 
   const navLinks = [
     { href: "/", icon: AiFillHome, label: "Home" },
-    { href: "/schedule", icon: RiCalendarScheduleFill, label: "My Schedule" },
+    { href: "/ai", icon: RiRobot2Fill, label: "AI" },
     { href: "/bus", icon: FaBusAlt, label: "Bus Tracker" },
-    { href: "/finance", icon: MdAttachMoney, label: "Finance" },
-    { href: "/complaint", icon: FiFlag, label: "Complaint" },
-    { href: "/attendance", icon: CiSquareCheck, label: "My attendance" },
+    { href: "/news", icon: FaNewspaper, label: "News" },
+    { href: "/evaluate", icon: CiSquareCheck, label: "Evaluate Teachers" },
   ];
 
   if (!isClient)
@@ -294,6 +297,7 @@ const NavBar = () => {
                             </DropdownMenu.Item>
                             <DropdownMenu.Item asChild>
                               <a
+                              onClick={()=> DeleteCookie()}
                                 className="text-textPrimary flex items-center gap-x-3.5 rounded-lg border-none px-3 py-2 text-sm outline-none hover:bg-error hover:text-white"
                                 href="/login"
                               >
@@ -460,13 +464,6 @@ const NavBar = () => {
                           Homework{" "}
                         </Link>
                         <Link
-                          className={`hover:text-primary ${url === "/textbooks" ? "text-primary" : ""}`}
-                          href="/textbooks"
-                        >
-                          {" "}
-                          Textbooks{" "}
-                        </Link>
-                        <Link
                           className={`hover:text-primary ${url === "/grades" ? "text-primary" : ""}`}
                           href="/grades"
                         >
@@ -482,10 +479,10 @@ const NavBar = () => {
                         </Link>
                         <Link
                           className={`hover:text-primary ${url === "/exercises" ? "text-primary" : "textPrimary"}`}
-                          href="/exercises"
+                          href="/material"
                         >
                           {" "}
-                          Exercises{" "}
+                          Material{" "}
                         </Link>
                       </ul>
                     )}

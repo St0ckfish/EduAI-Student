@@ -63,7 +63,7 @@ const DailyPlan = () => {
   const handleStartNextExam = () => {
     // Find the next exam with the status "pending"
     const nextExam = plans.find((plan) => plan.status === "pending");
-  
+
     if (nextExam) {
       // If an available exam is found, update the state
       setSelectedGrade(nextExam.value); // Set the next exam as selected
@@ -210,12 +210,12 @@ const DailyPlan = () => {
   ];
 
   const [selectedGrade, setSelectedGrade] = useState<any>(() => {
-    const availablePlans = plans.filter(plan => plan.status !== "completed");
-    return availablePlans.length > 0 ? availablePlans[0]?.value : ""; 
+    const availablePlans = plans.filter((plan) => plan.status !== "completed");
+    return availablePlans.length > 0 ? availablePlans[0]?.value : "";
   });
-  
+
   const selectedSubject = plans.find((plan) => plan.value === selectedGrade);
-  
+
   return (
     <Container>
       <Box>
@@ -263,24 +263,38 @@ const DailyPlan = () => {
               <div className="text-center">
                 {selectedSubject?.Questions?.length &&
                 correctAnswersCount >= selectedSubject?.Questions.length / 2 ? (
-                  <div className="flex items-center justify-center">
-                    <Image
-                      src={"/images/congratulations.png"}
-                      alt="congratulations"
-                      width={400}
-                      height={400}
-                    />
-                    <Text
-                      color={"success"}
-                      font={"bold"}
-                      size={"4xl"}
-                      className="absolute mb-10"
-                    >
-                      {correctAnswersCount}  {""}
-                    </Text>
-                    <Text font={"bold"} size={"4xl"} className="absolute mb-10 ml-20">
-                    / {selectedSubject?.Questions.length}
-                    </Text>
+                  <div>
+                    <div className="flex items-center justify-center">
+                      <Image
+                        src={"/images/congratulations.png"}
+                        alt="congratulations"
+                        width={400}
+                        height={400}
+                        className="ml-14"
+                      />
+                      <Text
+                        color={"success"}
+                        font={"bold"}
+                        size={"4xl"}
+                        className="absolute mb-10"
+                      >
+                        {correctAnswersCount} {""}
+                      </Text>
+                      <Text
+                        font={"bold"}
+                        size={"4xl"}
+                        className="absolute mb-10 ml-20"
+                      >
+                        / {selectedSubject?.Questions.length}
+                      </Text>
+                    </div>
+                    <div className="ml-14 mt-10 flex justify-center">
+                      <div className="w-fit">
+                        <Button onClick={handleStartNextExam}>
+                          Start Next Exam
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 ) : (
                   <div>
@@ -304,7 +318,9 @@ const DailyPlan = () => {
                     </div>
                     <div className="mt-10 flex justify-center">
                       <div className="w-fit">
-                      <Button onClick={handleStartNextExam}>Start Next Exam</Button>
+                        <Button onClick={handleStartNextExam}>
+                          Start Next Exam
+                        </Button>
                       </div>
                     </div>
                   </div>

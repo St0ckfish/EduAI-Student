@@ -8,6 +8,44 @@ import { Calendar } from "~/components/ui/calendar";
 import { FaCircle } from "react-icons/fa";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import Image from "next/image";
+import { TrendingUp } from "lucide-react"
+import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "~/components/ui/chart"
+import Link from "next/link";
+import { useGetAttendance, useGetGpa, useGetUpCommingEvents } from "~/APIs/hooks/useHome";
+import Spinner from "~/_components/Spinner";
+import { formatDate } from "~/hooks/useFormatDate";
+const chartData = [
+  { month: "January", gpa: 186, attendance: 80, class: 20, behavior: 54 },
+  { month: "February", gpa: 305, attendance: 200, class: 24, behavior: 56 },
+  { month: "March", gpa: 237, attendance: 120, class: 64, behavior: 65 },
+  { month: "April", gpa: 73, attendance: 190, class: 54, behavior: 87 },
+  { month: "May", gpa: 209, attendance: 130, class: 87, behavior: 48 },
+  { month: "June", gpa: 214, attendance: 140, class: 68, behavior: 87 },
+]
+const chartConfig = {
+  gpa: {
+    label: "GPA",
+    color: "#76E2AD",
+  },
+  attendance: {
+    label: "Attendance",
+    color: "#EC7C73",
+  },
+  class: {
+    label: "Class Participation",
+    color: "#F4BE22",
+  },
+  behavior: {
+    label: "Student Behavior",
+    color: "#AC94EC",
+  },
+} satisfies ChartConfig
 
 export default function Home() {
   function CalendarDemo() {
@@ -22,6 +60,9 @@ export default function Home() {
       />
     );
   }
+  const { data: gpa, isLoading: isGpa } = useGetGpa()
+  const { data: attendance, isLoading: isAttendance } = useGetAttendance()
+  const { data: events, isLoading: isEvents } = useGetUpCommingEvents()
   return (
     <>
       <Container>
@@ -40,74 +81,71 @@ export default function Home() {
                 Ready to excel? Answer 10 questions daily and move closer to
                 success!
               </Text>
-              <Text
-                color={"primary"}
-                font={"semiBold"}
-                size={"lg"}
-                className="mt-2"
+              <Link
+                href="/daily-plan"
+                className="mt-2 font-semibold text-primary"
               >
                 Start
-              </Text>
+              </Link>
             </Box>
             <Box className="mb-5">
               <Text font={"bold"} size={"xl"}>
                 Upcoming Events
               </Text>
-              <div className="mt-4 flex justify-between border-l-4 border-warning p-2 pl-4">
-                <div>
-                  <Text font={"semiBold"} size={"lg"}>
-                    Art Day
-                  </Text>
-                  <Text color={"gray"} size={"lg"}>
-                    Tomorrow
-                  </Text>
-                </div>
-                <div className="flex flex-col items-end">
-                  <Text font={"semiBold"} size={"lg"}>
-                    2:00 PM
-                  </Text>
-                  <Text font={"semiBold"} size={"lg"}>
-                    21 may,2024
-                  </Text>
-                </div>
-              </div>
-              <div className="mt-4 flex justify-between border-l-4 border-success p-2 pl-4">
-                <div>
-                  <Text font={"semiBold"} size={"lg"}>
-                    Art Day
-                  </Text>
-                  <Text color={"gray"} size={"lg"}>
-                    Tomorrow
-                  </Text>
-                </div>
-                <div className="flex flex-col items-end">
-                  <Text font={"semiBold"} size={"lg"}>
-                    2:00 PM
-                  </Text>
-                  <Text font={"semiBold"} size={"lg"}>
-                    21 may,2024
-                  </Text>
-                </div>
-              </div>
-              <div className="mt-4 flex justify-between border-l-4 border-warning p-2 pl-4">
-                <div>
-                  <Text font={"semiBold"} size={"lg"}>
-                    Art Day
-                  </Text>
-                  <Text color={"gray"} size={"lg"}>
-                    Tomorrow
-                  </Text>
-                </div>
-                <div className="flex flex-col items-end">
-                  <Text font={"semiBold"} size={"lg"}>
-                    2:00 PM
-                  </Text>
-                  <Text font={"semiBold"} size={"lg"}>
-                    21 may,2024
-                  </Text>
-                </div>
-              </div>
+              {
+                isEvents ?
+                  <div className="flex w-full justify-center">
+                    <Spinner />
+                  </div> :
+                  <>
+                    {
+                      events?.data?.content.map((event: any) => {
+                        const { dayNumber, monthName, year, time } = formatDate(event.startDate);
+
+                        return (
+                          <React.Fragment key={event.id}>
+                            <div className="mt-4 flex justify-between border-l-4 border-warning p-2 pl-4">
+                              <div>
+                                <Text font={"semiBold"} size={"lg"}>
+                                  {event.title}
+                                </Text>
+                                <Text color={"gray"} size={"lg"}>
+                                  {event?.description}
+                                </Text>
+                              </div>
+                              <div className="flex flex-col items-end">
+                                <Text font={"semiBold"} size={"lg"}>
+                                  {time}
+                                </Text>
+                                <Text font={"semiBold"} size={"lg"}>
+                                  {dayNumber} {monthName}, {year}
+                                </Text>
+                              </div>
+                            </div>
+                            {
+                              event.attendees.map((img: any) => (
+                                <div key={img.id} className="flex gap-2 items-center">
+                                <Image
+                                src={img.picture}
+                                alt="Profile Photo"
+                                width={100}
+                                height={100}
+                                />
+                                  <Text font={"semiBold"} size={"lg"}>
+                                  {img.attendeeName}
+                                </Text>
+                                </div>
+                              ))
+                            }
+                            <hr className="mt-4" />
+                          </React.Fragment>
+                        );
+                      })
+                    }
+                  </>
+              }
             </Box>
+
             <Box>
               <Text font={"bold"} size={"xl"}>
                 Academic Progress
@@ -115,44 +153,26 @@ export default function Home() {
               <Text color={"gray"} font={"semiBold"} size={"lg"}>
                 This Semester
               </Text>
-              <BoxGrid gap={4} className="py-4">
-                <Box shadow="md">
-                  <Text font={"semiBold"} color={"gray"}>
-                    GPA
-                  </Text>
-                  <Text font={"semiBold"}>5.8</Text>
-                  <Text font={"semiBold"} color={"success"}>
-                    +1.3
-                  </Text>
-                </Box>
-                <Box shadow="md">
-                  <Text font={"semiBold"} color={"gray"}>
-                    Attendance
-                  </Text>
-                  <Text font={"semiBold"}>84%</Text>
-                  <Text font={"semiBold"} color={"error"}>
-                    -3%
-                  </Text>
-                </Box>
-                <Box shadow="md">
-                  <Text font={"semiBold"} color={"gray"}>
-                    Class Participation
-                  </Text>
-                  <Text font={"semiBold"}>Good</Text>
-                  <Text font={"semiBold"} color={"success"}>
-                    +4
-                  </Text>
-                </Box>
-                <Box shadow="md">
-                  <Text font={"semiBold"} color={"gray"}>
-                    Student Behavior
-                  </Text>
-                  <Text font={"semiBold"}>Good</Text>
-                  <Text font={"semiBold"} color={"success"}>
-                    +3
-                  </Text>
-                </Box>
-              </BoxGrid>
+              {
+                isGpa || isAttendance ?
+                  <div className="flex w-full justify-center">
+                    <Spinner />
+                  </div> :
+                  <BoxGrid gap={4} className="py-4">
+                    <Box shadow="md">
+                      <Text font={"semiBold"} color={"gray"}>
+                        GPA
+                      </Text>
+                      <Text font={"semiBold"}>{gpa?.currentGpa}</Text>
+                    </Box>
+                    <Box shadow="md">
+                      <Text font={"semiBold"} color={"gray"}>
+                        Attendance
+                      </Text>
+                      <Text font={"semiBold"}>{attendance?.currentAttendance}%</Text>
+                    </Box>
+                  </BoxGrid>
+              }
             </Box>
           </div>
           <div>
@@ -235,15 +255,70 @@ export default function Home() {
                 <Text>Class Participation</Text>
               </div>
               <div className="flex items-center gap-1">
-                <FaCircle size={8} className="text-lavender" />p
+                <FaCircle size={8} className="text-lavender" />
                 <Text>Student Behavior</Text>
               </div>
             </div>
           </div>
           <div className="text-center">
-            <Text font={"bold"} size={"4xl"} className="mt-10">
-              Chart
-            </Text>
+            <ChartContainer config={chartConfig}>
+              <LineChart
+                accessibilityLayer
+                data={chartData}
+                margin={{
+                  left: 12,
+                  right: 12,
+                }}
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="month"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  tickFormatter={(value) => value.slice(0, 3)}
+                />
+                <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+                <Line
+                  dataKey="gpa"
+                  type="monotone"
+                  stroke="var(--color-gpa)"
+                  strokeWidth={2}
+                  dot={false}
+                />
+                <Line
+                  dataKey="attendance"
+                  type="monotone"
+                  stroke="var(--color-attendance)"
+                  strokeWidth={2}
+                  dot={false}
+                />
+                <Line
+                  dataKey="class"
+                  type="monotone"
+                  stroke="var(--color-class)"
+                  strokeWidth={2}
+                  dot={false}
+                />
+                <Line
+                  dataKey="behavior"
+                  type="monotone"
+                  stroke="var(--color-behavior)"
+                  strokeWidth={2}
+                  dot={false}
+                />
+              </LineChart>
+            </ChartContainer>
+            <div className="flex w-full items-start gap-2 text-sm">
+              <div className="grid gap-2">
+                <div className="flex items-center gap-2 font-medium leading-none">
+                  Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+                </div>
+                <div className="flex items-center gap-2 leading-none text-muted-foreground">
+                  Showing total visitors for the last 6 months
+                </div>
+              </div>
+            </div>
           </div>
         </Box>
         <Box>
