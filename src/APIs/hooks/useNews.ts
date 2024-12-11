@@ -1,8 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
   UseQueryOptions,
 } from "@tanstack/react-query";
-import { fetchAllNews } from "../features/news";
+import { fetchAllNews, likePost } from "../features/news";
 
 
 export const useGetAllNews = (
@@ -15,3 +15,9 @@ export const useGetAllNews = (
     ...options,
   });
 };
+
+export function useLikePost() {
+  return useMutation<void, Error, { postId: number; liked: boolean }>({
+    mutationFn: ({ postId, liked }) => likePost(postId, liked), 
+  });
+}

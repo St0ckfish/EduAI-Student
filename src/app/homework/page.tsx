@@ -3,109 +3,149 @@
 import Container from "~/_components/Container";
 import * as React from "react";
 import { Calendar } from "~/components/ui/calendar";
+import { Text } from "~/_components/Text";
+import { useGetAllHomeWorks } from "~/APIs/hooks/useHomeWork";
+import { format } from "date-fns";
+import Spinner from "~/_components/Spinner";
+import type { Homework } from "~/types";
 
-function CalendarDemo() {
+function CalendarDemo({
+  onDateSelect,
+}: {
+  onDateSelect: (date: Date) => void;
+}) {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
 
+  const handleDateSelect = (newDate: Date | undefined) => {
+    if (newDate) {
+      setDate(newDate);
+      onDateSelect(newDate);
+    }
+  };
   return (
     <Calendar
       mode="single"
       selected={date}
-      onSelect={setDate}
+      onSelect={handleDateSelect}
       className="flex w-fit justify-center rounded-md max-[1080px]:w-full"
     />
   );
 }
+
 const Homework = () => {
+  const [selectedDate, setSelectedDate] = React.useState<Date>(new Date());
+  const [selectedSessionId, setSelectedSessionId] = React.useState<
+    number | null
+  >(null);
+
+  function formatDateTimeBeautifully(dateString: string): string {
+    const date = new Date(dateString);
+
+    const dayNames = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    const dayName = dayNames[date.getDay()];
+    const monthName = monthNames[date.getMonth()];
+    const dayOfMonth = date.getDate();
+    const year = date.getFullYear();
+
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? "PM" : "AM";
+
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+
+    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+
+    return `${dayName}, ${monthName} ${dayOfMonth}, ${year} at ${hours}:${formattedMinutes} ${ampm}`;
+  }
+  const formattedDate = React.useMemo(
+    () => format(selectedDate, "yyyy-MM-dd"),
+    [selectedDate],
+  );
+
+  const { data: homeworks, isLoading: isHomework } = useGetAllHomeWorks(
+    formattedDate,
+  );
+
+  const handleDateSelect = (date: Date) => {
+    setSelectedDate(date);
+    setSelectedSessionId(null);
+  };
+
+
   return (
     <Container>
       <div className="mb-4 flex w-full gap-10 max-[1080px]:grid">
-        <div className="flex">
-          <CalendarDemo />
+        <div className="flex h-fit">
+          <CalendarDemo onDateSelect={handleDateSelect} />
         </div>
 
-        <div className="grid w-full gap-2 rounded-md bg-white p-4">
+        <div className="grid w-full gap-2 rounded-md bg-bgPrimary p-4">
           <div className="flex w-full items-start justify-between">
-            <p className="mb-3 font-semibold">Homework</p>
-            <button className="flex items-center gap-2 font-medium text-primary">
-              <svg
-                className="h-6 w-6 text-primary"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>{" "}
-              Add Material
-            </button>
+            <Text font={"bold"} size={"2xl"}>
+              Homework
+            </Text>
           </div>
-          <div className="rounded-md border border-gray-200 p-4">
-            <div className="grid h-full gap-2 border-l-2 border-primary px-3">
-              <div className="flex items-start justify-between">
-                <p className="mb-3 font-semibold">Title</p>
-                <button>
-                  <svg
-                    className="h-6 w-6 text-black"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    {" "}
-                    <circle cx="12" cy="12" r="1" />{" "}
-                    <circle cx="12" cy="5" r="1" />{" "}
-                    <circle cx="12" cy="19" r="1" />
-                  </svg>
-                </button>
-              </div>
-              <div className="text-gray-400">
-                <p>
-                  Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                  Eveniet, dolorum velit beatae sed aspernatur non! Tempore
-                  earum, voluptas optio odit obcaecati repellat libero
-                  voluptatum aut, similique culpa et minima accusamus.
-                </p>
-              </div>
+          {/* Homework List */}
+          {isHomework && selectedSessionId ? (
+            <div className="flex w-full justify-center">
+              <Spinner />
             </div>
-          </div>
-          <div className="rounded-md border border-gray-200 p-4">
-            <div className="grid h-full gap-2 border-l-2 border-primary px-3">
-              <div className="flex items-start justify-between">
-                <p className="mb-3 font-semibold">Title</p>
-                <button>
-                  <svg
-                    className="h-6 w-6 text-black"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+          ) : (
+            <div className="grid h-full items-start">
+              {homeworks?.data?.content && homeworks.data.content.length > 0 ? (
+                homeworks?.data.content.map((homework: Homework) => (
+                  <div
+                    key={homework.id}
+                    className="mb-2 rounded-md border border-borderPrimary p-4"
                   >
-                    {" "}
-                    <circle cx="12" cy="12" r="1" />{" "}
-                    <circle cx="12" cy="5" r="1" />{" "}
-                    <circle cx="12" cy="19" r="1" />
-                  </svg>
-                </button>
-              </div>
-              <div className="text-gray-400">
-                <p>
-                  Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                  Eveniet, dolorum velit beatae sed aspernatur non! Tempore
-                  earum, voluptas optio odit obcaecati repellat libero
-                  voluptatum aut, similique culpa et minima accusamus.
-                </p>
-              </div>
+                    <div className="grid h-full gap-2 border-l-4 border-primary px-3">
+                      <div className="flex items-start justify-between">
+                        <Text font="bold" size="xl">
+                          {homework.title}
+                        </Text>
+                      </div>
+                      <div>
+                        <Text color="error" font="medium">
+                          Deadline:{" "}
+                          {formatDateTimeBeautifully(homework.deadline)}
+                        </Text>
+                        <Text color="gray">{homework.description}</Text>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center text-gray-500">
+                  No homework found for the selected session
+                </div>
+              )}
             </div>
-          </div>
+          )}
         </div>
       </div>
     </Container>

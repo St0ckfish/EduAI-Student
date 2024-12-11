@@ -28,8 +28,8 @@ export default function RootLayout({
     <html lang="en" className={`${GeistSans.variable}`} 
     suppressHydrationWarning>
       <head>
-        <title>EduAI Teacher</title>
-        <meta name="description" content="Edu AI-Admin" />
+        <title>EduAI Student</title>
+        <meta name="description" content="EduAI Student" />
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
       </head>
       <body className="bg-bgSecondary">

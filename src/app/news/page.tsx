@@ -1,12 +1,25 @@
 "use client"
 import Image from "next/image";
+import { FaHeart, FaPaperPlane, FaRegComment, FaRegHeart } from "react-icons/fa";
 import Box from "~/_components/Box";
 import Container from "~/_components/Container";
 import Spinner from "~/_components/Spinner";
 import { Text } from "~/_components/Text";
-import { useGetAllNews } from "~/APIs/hooks/useNews";
+import { useGetAllNews, useLikePost } from "~/APIs/hooks/useNews";
 const News = () => {
-  const {data, isLoading} = useGetAllNews();
+  const {data, isLoading, refetch} = useGetAllNews();
+  const { mutate: likePost } = useLikePost();
+
+  const handleLikeClick = (postId: number, liked: boolean) => {
+    likePost(
+      { postId, liked },
+      {
+        onSuccess: () => {
+          void refetch(); // Only refetch posts after successful like/unlike mutation
+        },
+      },
+    );
+  };
   if(isLoading){
     return(
       <div className="flex w-full justify-center">
@@ -63,6 +76,27 @@ const News = () => {
                       
                     </div>
                   </div>
+                  <hr className="mt-7" />
+                    <div className="flex gap-3 mt-2">
+                  <button
+                    className="flex items-center gap-1"
+                  >
+                    {newsItem?.isLiked ? (
+                      <FaHeart
+                        color="red"
+                        size={20}
+                        onClick={() => handleLikeClick(newsItem.id, false)}
+                      />
+                    ) : (
+                      <FaRegHeart
+                        size={20}
+                        onClick={() => handleLikeClick(newsItem.id, true)}
+                      />
+                    )}
+
+                    <Text size={"xs"}>{newsItem?.likesCount}</Text>
+                  </button>
+                </div>
                 </Box>
               ))
             }

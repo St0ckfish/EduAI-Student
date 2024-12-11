@@ -236,3 +236,37 @@ export type StudentProfileUpdate = {
   phone?: string;
   countryCode?: string;
 };
+
+  export type HomeworkResponse = {
+    success: boolean;
+    message: string;
+    data: PaginationData<Homework>;
+  };
+  
+  export type HomeWorkFormData = {
+    title: string;
+    description: string;
+    deadline: string;
+    sessionId: string;
+  };
+  export type PaginationData<T> = {
+    content: T[];
+    totalElementsCount: number;
+    totalPagesCount: number;
+    pageElementsCount: number;
+    pageSize: number;
+    pageNumber: number;
+    firstPage: boolean;
+    lastPage: boolean;
+    emptyPage: boolean;
+    sortedPage: boolean;
+  };
+  
+  // Homework item interface
+  export type Homework = {
+    id: number;
+    title: string;
+    description: string;
+    deadline: string; // Consider using Date if you're parsing the date
+  };
+ 
