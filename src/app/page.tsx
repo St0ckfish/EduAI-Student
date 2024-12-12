@@ -8,6 +8,7 @@ import { Calendar } from "~/components/ui/calendar";
 import { FaCircle } from "react-icons/fa";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import Image from "next/image";
+import { format } from "date-fns";
 import { TrendingUp } from "lucide-react"
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
 import {
@@ -17,7 +18,7 @@ import {
   ChartTooltipContent,
 } from "~/components/ui/chart"
 import Link from "next/link";
-import { useGetAttendance, useGetGpa, useGetUpCommingEvents } from "~/APIs/hooks/useHome";
+import { useGetAllCommingSchedule, useGetAttendance, useGetGpa, useGetUpCommingEvents } from "~/APIs/hooks/useHome";
 import Spinner from "~/_components/Spinner";
 import { formatDate } from "~/hooks/useFormatDate";
 const chartData = [
@@ -48,21 +49,42 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export default function Home() {
-  function CalendarDemo() {
-    const [date, setDate] = React.useState<Date | undefined>(new Date());
-
+  function CalendarDemo({
+    selectedDate,
+    onDateSelect,
+  }: {
+    selectedDate: Date;
+    onDateSelect: (date: Date) => void;
+  }) {
+    const handleDateSelect = React.useCallback((newDate: Date | undefined) => {
+      if (newDate) {
+        onDateSelect(newDate);
+      }
+    }, [onDateSelect]);
+  
     return (
       <Calendar
         mode="single"
-        selected={date}
-        onSelect={setDate}
-        className="rounded-commentsCountmd flex w-full justify-center"
+        selected={selectedDate}
+        onSelect={handleDateSelect}
+        className="flex w-fit justify-center rounded-md max-[1080px]:w-full"
       />
     );
   }
+  const [selectedDate, setSelectedDate] = React.useState<Date>(new Date());
   const { data: gpa, isLoading: isGpa } = useGetGpa()
   const { data: attendance, isLoading: isAttendance } = useGetAttendance()
   const { data: events, isLoading: isEvents } = useGetUpCommingEvents()
+  const formattedDate = React.useMemo(
+      () => format(selectedDate, "yyyy-MM-dd"),
+      [selectedDate],
+    );
+  const { data: schedule, isLoading: isSchedule } = useGetAllCommingSchedule(
+    formattedDate,
+  )
+  const handleDateSelect = (date: Date) => {
+    setSelectedDate(date);
+  };
   return (
     <>
       <Container>
@@ -176,63 +198,42 @@ export default function Home() {
             </Box>
           </div>
           <div>
-            <Box className="p-4">
+            <Box className="p-4 grid justify-center">
               <div className="m-10 mt-4 flex w-fit items-center justify-center shadow-lg">
-                <CalendarDemo />
+              <CalendarDemo 
+                  selectedDate={selectedDate} 
+                  onDateSelect={handleDateSelect} 
+                />
               </div>
+              {
+                isSchedule ? <div className="flex w-full justify-center">
+                <Spinner />
+              </div> :
               <BoxGrid columns={1} gap={4}>
-                <Box border="borderPrimary" shadow="none">
-                  <div className="flex justify-between">
-                    <div className="flex gap-4">
-                      <FaCircle size={25} className="text-primary" />
-                      <Text>Arabic Exam</Text>
-                    </div>
-                    <Text>8:00 am - 10:00 am</Text>
-                  </div>
-                </Box>
-                <Box border="borderPrimary" shadow="none">
-                  <div className="flex justify-between">
-                    <div className="flex gap-4">
-                      <FaCircle size={25} className="text-primary" />
-                      <Text>Arabic Exam</Text>
-                    </div>
-                    <Text>8:00 am - 10:00 am</Text>
-                  </div>
-                </Box>
-                <Box border="borderPrimary" shadow="none">
-                  <div className="flex justify-between">
-                    <div className="flex gap-4">
-                      <FaCircle size={25} className="text-primary" />
-                      <Text>Arabic Exam</Text>
-                    </div>
-                    <Text>8:00 am - 10:00 am</Text>
-                  </div>
-                </Box>
-                <Box border="borderPrimary" shadow="none">
-                  <div className="flex justify-between">
-                    <div className="flex gap-4">
-                      <FaCircle size={25} className="text-primary" />
-                      <Text>Arabic Exam</Text>
-                    </div>
-                    <Text>8:00 am - 10:00 am</Text>
-                  </div>
-                </Box>
-                <Box border="borderPrimary" shadow="none">
-                  <div className="flex justify-between">
-                    <div className="flex gap-4">
-                      <FaCircle size={25} className="text-primary" />
-                      <Text>Arabic Exam</Text>
-                    </div>
-                    <Text>8:00 am - 10:00 am</Text>
-                  </div>
-                </Box>
+                {
+                  schedule?.data?.map((section:any) => {
+                    return (
+                    <Box key={section.id} border="borderPrimary" shadow="none">
+                      <div className="flex justify-between">
+                        <div className="flex gap-4">
+                          <FaCircle size={25} className="text-primary" />
+                          <Text>{section.courseName}</Text>
+                          <Text>{section.teacherName}</Text>
+                        </div>
+                        <Text>{section.startTime}- {section.endTime}</Text>
+                      </div>
+                    </Box>
+                  )})
+                }
               </BoxGrid>
-              <div className="mt-4 flex items-center justify-center">
-                <Text font={"semiBold"} color={"primary"}>
-                  Show More
-                </Text>
-                <MdKeyboardArrowDown className="text-primary" size={25} />
-              </div>
+              }
+              {
+                schedule?.data?.length == 0 &&(
+                  <Box border="borderPrimary" shadow="none">
+                    No Schedule Today
+                  </Box>
+                )
+              }
             </Box>
           </div>
         </div>
