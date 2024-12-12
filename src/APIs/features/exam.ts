@@ -1,6 +1,12 @@
 import axiosInstance from "../axios";
 import type { ExamFormData, ExamListResponse, ExamResultsResponse, Upcoming_Previous_Exams } from "../../types";
 
+export const fetchAllDailyExams = async (): Promise<any> => {
+    const response = await axiosInstance.get<any>(
+        `/api/v1/daily-exam/student/all`
+    );
+    return response.data;
+};
 export const fetchAllExams = async (): Promise<ExamListResponse> => {
     const response = await axiosInstance.get<ExamListResponse>(
         `/api/v1/academic/educationalAffairs/exams/teacher`

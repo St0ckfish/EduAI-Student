@@ -8,6 +8,8 @@ import Button from "~/_components/Button";
 import { AiOutlineCheckCircle, AiOutlineCloseCircle } from "react-icons/ai";
 import Image from "next/image";
 import { toast } from "react-toastify";
+import { useGetAllDailyExams } from "~/APIs/hooks/useExam";
+import Spinner from "~/_components/Spinner";
 
 const DailyPlan = () => {
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
@@ -59,6 +61,8 @@ const DailyPlan = () => {
       setIsTestCompleted(true); // Mark test as completed
     }
   };
+
+  const {data: exams, isLoading: isExams} = useGetAllDailyExams()
 
   const handleStartNextExam = () => {
     // Find the next exam with the status "pending"
@@ -224,38 +228,44 @@ const DailyPlan = () => {
         </Text>
         <div className="flex w-full justify-start gap-8 rounded-xl bg-bgPrimary p-8">
           <div className="w-1/5">
+          {
+            isExams ? <div className="flex w-full justify-center">
+            <Spinner />
+          </div> :
             <RadioGroup.Root
               className="gap-4"
               value={selectedGrade}
               onValueChange={handleGradeChange}
               aria-label="Grade Selection"
             >
-              {plans.map(({ value, label, status }) => (
+              {exams?.data?.map((exam:any) => (
                 <RadioGroup.Item
-                  key={value}
-                  value={value}
-                  className={`${status === "completed" ? "cursor-not-allowed" : ""} group mt-1 flex h-20 w-full flex-col justify-center rounded-l-2xl bg-lightGray px-4 text-center text-textPrimary transition hover:border-primary hover:text-primary focus-visible:ring focus-visible:ring-blue-200 focus-visible:ring-opacity-75 data-[state=checked]:border-primary data-[state=checked]:bg-primary`}
-                  aria-labelledby={`${value}-label`}
+                  key={exam.id}
+                  value={exam.id}
+                  className={`${exam.completed === true ? "cursor-not-allowed" : ""} group mt-1 flex h-20 w-full flex-col justify-center rounded-l-2xl bg-lightGray px-4 text-center text-textPrimary transition hover:border-primary hover:text-primary focus-visible:ring focus-visible:ring-blue-200 focus-visible:ring-opacity-75 data-[state=checked]:border-primary data-[state=checked]:bg-primary`}
+                  aria-labelledby={`${exam.id}-label`}
                   disabled={status === "completed"} // Disable the item if completed
                 >
                   <div className="flex w-full justify-between">
                     <span
-                      id={`${value}-label`}
+                      id={`${exam.id}-label`}
                       className="text-xl font-semibold group-data-[state=checked]:text-white"
                     >
-                      {label}
+                      {exam.courseName} <p className="font-medium text-sm">{exam.topicName}</p>
                     </span>
                     <div className="">
                       <p
-                        className={`${status === "completed" ? "bg-success/5 text-success" : "bg-warning/5 text-warning"} rounded-xl p-2 font-bold group-data-[state=checked]:bg-primary group-data-[state=checked]:text-primary`}
+                        className={`${exam.completed === true ? "bg-success/5 text-success" : "bg-warning/5 text-warning"} rounded-xl p-2 font-bold group-data-[state=checked]:bg-primary group-data-[state=checked]:text-primary`}
                       >
-                        {status}
+                        {exam.completed === true ? "completed" : "pending"}
                       </p>
                     </div>
                   </div>
+                    
                 </RadioGroup.Item>
               ))}
             </RadioGroup.Root>
+          }
           </div>
 
           <div className="w-4/5">
@@ -341,7 +351,7 @@ const DailyPlan = () => {
                       <RadioGroup.Root
                         className="gap-4"
                         aria-label="Answer Choices"
-                        value={selectedAnswer || ""} // Bind value to reset on question change
+                        value={selectedAnswer ?? ""} // Bind value to reset on question change
                         onValueChange={(value) => setSelectedAnswer(value)} // Update selectedAnswer on change
                       >
                         {selectedSubject.Questions[
