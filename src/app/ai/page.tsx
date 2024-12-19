@@ -39,9 +39,9 @@ const AI = () => {
                         {
                             subjects.map((subject) => (
                                 <Link key={subject.name} href={subject.link} className="w-[250px] h-[105px]">
-                                <div  className="bg-[#E8EEFF] rounded-3xl grid gap-2 p-3 w-[250px] h-[105px]">
+                                <div  className="bg-thead rounded-3xl grid gap-2 p-3 w-[250px] h-[105px]">
                                     <div className="flex w-full justify-between items-center">
-                                        <div className="p-2 rounded-full bg-white">{subject.icon}</div>
+                                        <div className="p-2 rounded-full bg-bgPrimary">{subject.icon}</div>
                                         <GoArrowUpRight className="text-2xl" />
                                     </div>
                                     <div>

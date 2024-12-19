@@ -25,23 +25,34 @@ export default function RootLayout({
     pathname === "/confirm-account" ||
     pathname === "/choose-account";
   return (
-    <html lang="en" className={`${GeistSans.variable}`} 
-    suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${GeistSans.variable}`}
+      suppressHydrationWarning
+    >
       <head>
-        <title>EduAI Student</title>
-        <meta name="description" content="EduAI Student" />
+        <title>Welcome to EduAI Student Portal</title>
+        <meta
+          name="description"
+          content="Access your classes, assignments, grades, and schedules all in one place. Stay organized, track your progress, and make the most of your learning experience."
+        />
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1.1, minimum-scale=0.5, user-scalable=no"
+        />
       </head>
+
       <body className="bg-bgSecondary">
-      <WithAuth excludePaths={['/login', '/signup']}>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {!isLoginPage && <NavBar />}
-          <Notification />
-          <TRPCReactProvider>{children}</TRPCReactProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
-      </WithAuth>
+        <WithAuth excludePaths={["/login", "/signup"]}>
+          <QueryClientProvider client={queryClient}>
+            <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+              {!isLoginPage && <NavBar />}
+              <Notification />
+              <TRPCReactProvider>{children}</TRPCReactProvider>
+            </ThemeProvider>
+          </QueryClientProvider>
+        </WithAuth>
       </body>
     </html>
   );

@@ -1,12 +1,11 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Box from "~/_components/Box";
 import BoxGrid from "~/_components/BoxGrid";
 import Container from "~/_components/Container";
 import { Text } from "~/_components/Text";
 import { Calendar } from "~/components/ui/calendar";
 import { FaCircle } from "react-icons/fa";
-import { MdKeyboardArrowDown } from "react-icons/md";
 import Image from "next/image";
 import { format } from "date-fns";
 import { TrendingUp } from "lucide-react"
@@ -82,9 +81,35 @@ export default function Home() {
   const { data: schedule, isLoading: isSchedule } = useGetAllCommingSchedule(
     formattedDate,
   )
+
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
   };
+
+    useEffect(() => {
+      const enforceZoomLevel = () => {
+        const zoomLevel = Math.round(window.devicePixelRatio * 100);
+  
+        if (zoomLevel > 110) {
+          document.body.style.transform = "scale(1)";
+          document.body.style.transformOrigin = "0 0";
+          console.log("Zoom level exceeded 110%. Resetting to 100%.");
+        } else {
+          document.body.style.transform = "none";
+        }
+  
+        console.log(`Current Zoom Level: ${zoomLevel}%`);
+      };
+  
+      enforceZoomLevel();
+  
+      window.addEventListener("resize", enforceZoomLevel);
+  
+      return () => {
+        window.removeEventListener("resize", enforceZoomLevel);
+      };
+    }, []);
+
   return (
     <>
       <Container>

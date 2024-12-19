@@ -39,7 +39,7 @@ const Grades = () => {
           value={selectedAcademicYear || ""} 
           onValueChange={setSelectedAcademicYear}
         >
-          <SelectTrigger className={`w-full border bg-white border-[#f0efef]`}>
+          <SelectTrigger className={`w-full border bg-bgPrimary border-borderPrimary`}>
             <SelectValue placeholder="Select Academic Year" />
           </SelectTrigger>
           <SelectContent>
@@ -57,7 +57,7 @@ const Grades = () => {
           onValueChange={setSelectedSemester}
           disabled={!selectedAcademicYear}
         >
-          <SelectTrigger className={`w-full border bg-white border-[#f0efef]`}>
+          <SelectTrigger className={`w-full border bg-bgPrimary border-borderPrimary`}>
             <SelectValue placeholder="Select Semester" />
           </SelectTrigger>
           <SelectContent>

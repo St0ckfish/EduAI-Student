@@ -21,7 +21,7 @@ const Evaluate = () => {
         <Select 
           value=""
         >
-          <SelectTrigger className={`w-full border bg-white border-[#f0efef]`}>
+          <SelectTrigger className={`w-full border bg-bgPrimary border-borderPrimary`}>
             <SelectValue placeholder="Select Teacher" />
           </SelectTrigger>
           <SelectContent>
@@ -35,7 +35,7 @@ const Evaluate = () => {
         <Select 
           value=""
         >
-          <SelectTrigger className={`w-full border bg-white border-[#f0efef]`}>
+          <SelectTrigger className={`w-full border bg-bgPrimary border-borderPrimary`}>
             <SelectValue placeholder="Select Subject" />
           </SelectTrigger>
           <SelectContent>
