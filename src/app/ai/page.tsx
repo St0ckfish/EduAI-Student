@@ -1,3 +1,4 @@
+"use client"
 import Image from "next/image";
 import Box from "~/_components/Box";
 import Container from "~/_components/Container";
