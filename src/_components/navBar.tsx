@@ -14,8 +14,12 @@ import Spinner from "./Spinner";
 import { Switch } from "~/components/ui/switch";
 import Cookie from "js-cookie";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { useBooleanValue, useUserDataStore } from "~/APIs/store";
+import { useProfile } from "~/APIs/hooks/useProfile";
+import { useNotificationsWebSocket } from "~/hooks/useNotifications";
 
 const useWindowDimensions = () => {
+
   const isClient = typeof window === "object";
   const [windowSize, setWindowSize] = useState(
     isClient
@@ -81,6 +85,8 @@ const NavBarLink = ({
 };
 
 const NavBar = () => {
+  const toggleNav = useBooleanValue((state) => state.toggle)
+
   const [profile, setProfile] = useState(false);
   const toggleProfile = () => {
     setProfile(!profile);
@@ -105,6 +111,7 @@ const NavBar = () => {
 
   const toggleNavbarSmall = () => {
     setSmall(!small);
+    toggleNav();
     if (!small == true) {
       setIsOpen5(true);
     }
@@ -112,7 +119,17 @@ const NavBar = () => {
       setIsOpen5(false);
     }
   };
-
+  const { data: dataUpdate } = useProfile();
+  useUserDataStore.getState().setUserData({ 
+    username: dataUpdate?.data.username, 
+    email: dataUpdate?.data.email, 
+    name_en: dataUpdate?.data.name, 
+    id: dataUpdate?.data.id?.toString(), 
+    picture: dataUpdate?.data.picture, 
+});
+const userData = useUserDataStore.getState().userData;
+  const userId = userData.id;
+  const { notificationsCount, isConnected } = useNotificationsWebSocket(userId);
   const OpenSideBar = () => {
     setIsOpen(!isOpen);
   };
@@ -198,7 +215,7 @@ const NavBar = () => {
                   />
                   <Link
                     href="/notifies"
-                    className="inline-flex h-[2.375rem] w-[2.375rem] items-center justify-center gap-x-2 rounded-full text-sm font-semibold text-textPrimary hover:bg-bgSecondary disabled:pointer-events-none disabled:opacity-50"
+                    className="relative inline-flex h-[2.375rem] w-[2.375rem] items-center justify-center gap-x-2 rounded-full text-sm font-semibold text-textPrimary hover:bg-bgSecondary disabled:pointer-events-none disabled:opacity-50"
                   >
                     <svg
                       className="size-4 flex-shrink-0"
@@ -215,6 +232,11 @@ const NavBar = () => {
                       <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
                       <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
                     </svg>
+                    {notificationsCount > 0 && (
+                      <div className="absolute top-4 left-5 bg-sky-500 text-white w-4 h-4 rounded-full flex justify-center items-center text-center text-sm">
+                        <span>{notificationsCount}</span>
+                      </div>
+                    )}
                   </Link>
                   <Link
                     href="/chat"
@@ -245,9 +267,9 @@ const NavBar = () => {
                           className="border-bgSeconday hover:bg-thead inline-flex h-[2.375rem] w-[2.375rem] items-center justify-center gap-x-2 rounded-full border text-sm font-semibold text-gray-800 outline-none disabled:pointer-events-none disabled:opacity-50"
                         >
                           <div>
-                            <img
+                          <img
                               className="inline-block h-[38px] w-[38px] rounded-full ring-2 ring-bgSecondary"
-                              src="/images/userr.png"
+                              src={`${userData.picture ?? "/images/userr.png"}`}
                               alt="User Avatar"
                             />
                           </div>
@@ -266,7 +288,7 @@ const NavBar = () => {
                               Signed in as
                             </p>
                             <p className="text-textPrimary text-sm font-medium">
-                              Example@gmail.com
+                            {userData?.email}
                             </p>
                           </div>
                           <div className="mt-2 py-2">
