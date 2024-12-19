@@ -11,7 +11,7 @@ import {
 } from "~/APIs/hooks/useProfile";
 import { useGetAllNationalities } from "~/APIs/hooks/useAuth";
 import { useState, useEffect } from "react";
-import { StudentProfileUpdate } from "~/types";
+import { type StudentProfileUpdate } from "~/types";
 import Button from "~/_components/Button";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
