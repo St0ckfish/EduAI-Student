@@ -1,3 +1,4 @@
+"use client"
 /* eslint-disable @next/next/no-img-element */
 import Box from "~/_components/Box";
 import Container from "~/_components/Container";
