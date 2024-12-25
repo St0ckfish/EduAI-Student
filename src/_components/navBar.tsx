@@ -520,3 +520,4 @@ const userData = useUserDataStore.getState().userData;
 };
 
 export default NavBar;
+
