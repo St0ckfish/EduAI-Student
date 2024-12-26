@@ -35,7 +35,7 @@ const News = () => {
             News
           </Text>
           <div className="flex justify-center">
-            <div className="w-1/2">
+            <div className="mt-8 w-4/5 md:w-3/4 xl:w-1/2">
             {
               data.data.content.map((newsItem: any) => (
                 <Box key={newsItem.id} border="borderPrimary" className="mb-10">

@@ -33,8 +33,8 @@ const Grades = () => {
 
   return (
     <Container>
-      <div className="flex w-full items-center justify-between gap-10">
-        {/* Academic Year Select */}
+      <div className="flex w-full items-center justify-between gap-4">
+      {/* Academic Year Select */}
         <Select 
           value={selectedAcademicYear || ""} 
           onValueChange={setSelectedAcademicYear}
@@ -73,8 +73,8 @@ const Grades = () => {
       </div>
 
       <div className="mt-10 flex h-full w-full items-center justify-center">
-        <div className="flex w-full overflow-auto rounded-md bg-bgPrimary p-4">
-          <div className="relative w-full overflow-auto sm:rounded-lg">
+        <div className="flex w-full rounded-md bg-bgPrimary p-4">
+          <div className="relative w-full overflow-x-auto sm:rounded-lg">
             <Text font="bold" size="2xl" className="mb-4">
               Continuous Evaluation Scores
             </Text>
