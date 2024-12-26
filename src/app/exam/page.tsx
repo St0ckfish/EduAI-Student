@@ -13,9 +13,10 @@ import {
 const Exam = () => {
   const [viewMode, setViewMode] = useState<"previous" | "upcoming">("previous");
 
-  const { data: dataUpcomingExams, isLoading: isLoadingUpcomingExams } = useGetAllUpcomingExams();
-  const { data: dataPreviousExams, isLoading: isLoadingPreviousExams } = useGetAllPreviousExams();
-
+  const { data: dataUpcomingExams, isLoading: isLoadingUpcomingExams } =
+    useGetAllUpcomingExams();
+  const { data: dataPreviousExams, isLoading: isLoadingPreviousExams } =
+    useGetAllPreviousExams();
 
   const renderExams = (data: any, type: "Previous" | "Upcoming") => {
     if (!data || data.length === 0) {
@@ -31,7 +32,7 @@ const Exam = () => {
         <Text font="bold" size="2xl" className="mb-4">
           {type} Exams
         </Text>
-        <table className="w-full overflow-x-auto p-4 text-left text-sm text-textPrimary">
+        <table className="w-full border-separate border-spacing-y-2 overflow-x-auto p-4 text-left text-sm text-textPrimary">
           <thead className="text-xs uppercase text-textPrimary">
             <tr>
               <th scope="col" className="whitespace-nowrap px-6 py-3">
@@ -69,8 +70,12 @@ const Exam = () => {
                 >
                   {exam.courseName}
                 </th>
-                <td className="whitespace-nowrap px-6 py-4">{exam.examGrade}</td>
-                <td className="whitespace-nowrap px-6 py-4">{exam.className}</td>
+                <td className="whitespace-nowrap px-6 py-4">
+                  {exam.examGrade}
+                </td>
+                <td className="whitespace-nowrap px-6 py-4">
+                  {exam.className}
+                </td>
                 <td className="whitespace-nowrap px-6 py-4">
                   {exam.examTypeName}
                 </td>
@@ -92,10 +97,10 @@ const Exam = () => {
   };
 
   // Show loading text if any data is still loading
-  if ( isLoadingUpcomingExams || isLoadingPreviousExams) {
+  if (isLoadingUpcomingExams || isLoadingPreviousExams) {
     return (
       <Container>
-        <div className="flex w-full h-[500px] items-center justify-center">
+        <div className="flex h-[500px] w-full items-center justify-center">
           <Spinner />
         </div>
       </Container>
@@ -103,39 +108,42 @@ const Exam = () => {
   }
 
   return (
-    <Container>
-      <div className="flex w-full items-center justify-between gap-7">
-        <div className="flex w-[400px] items-center gap-10">
-          <Button
-            theme={viewMode === "previous" ? "solid" : "outline"}
-            onClick={() => setViewMode("previous")}
-          >
-            Previous Exams
-          </Button>
-          <Button
-            theme={viewMode === "upcoming" ? "solid" : "outline"}
-            onClick={() => setViewMode("upcoming")}
-          >
-            Upcoming Exams
-          </Button>
+    <div>
+      <Container>
+        <div className="flex w-full items-center justify-between gap-7">
+        <div className="flex w-1/2 md:w-[400px] items-center gap-10">
+            <Button
+              className="text-sm md:text-md"
+              theme={viewMode === "previous" ? "solid" : "outline"}
+              onClick={() => setViewMode("previous")}
+            >
+              Previous Exams
+            </Button>
+            <Button
+              className="text-sm md:text-md"
+              theme={viewMode === "upcoming" ? "solid" : "outline"}
+              onClick={() => setViewMode("upcoming")}
+            >
+              Upcoming Exams
+            </Button>
+          </div>
         </div>
 
-      </div>
+        <div className="mt-10 flex h-full w-full items-center justify-center">
+          <div className="flex w-full overflow-auto rounded-md bg-bgPrimary p-4">
+            {
+              viewMode === "previous"
+                ? renderExams(dataPreviousExams?.data, "Previous")
+                : renderExams(dataUpcomingExams?.data, "Upcoming")
 
-      <div className="mt-10 flex h-full w-full items-center justify-center">
-        <div className="flex w-full overflow-auto rounded-md bg-bgPrimary p-4">
-          {
-            viewMode === "previous"
-              ? renderExams(dataPreviousExams?.data, "Previous")
-              : renderExams(dataUpcomingExams?.data, "Upcoming")
-
-            // <Text font="semiBold" size="xl">
-            //   Select a student to view their exams
-            // </Text>
-}
+              // <Text font="semiBold" size="xl">
+              //   Select a student to view their exams
+              // </Text>
+            }
+          </div>
         </div>
-      </div>
-    </Container>
+      </Container>
+    </div>
   );
 };
 

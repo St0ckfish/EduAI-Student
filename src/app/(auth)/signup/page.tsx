@@ -121,7 +121,9 @@ const Signup = () => {
       onSuccess: () => {
         toast.success("Form submitted successfully!");
       },
-      onError: (err: Error & { response?: { data: { message: string; data: [] } } }) => {
+      onError: (
+        err: Error & { response?: { data: { message: string; data: [] } } },
+      ) => {
         if (err.response?.data) {
           toast.error(err.response.data.message);
           setErrorMessage(err.response.data.data);
@@ -189,12 +191,12 @@ const Signup = () => {
         </Text>
 
         {/* Steps */}
-        <div className="mb-20 flex w-full items-center justify-between">
-          <div className="flex items-center">
+        <div className="mb-20 flex w-full flex-col items-center justify-center p-4 sm:flex-row">
+          <div className="flex flex-wrap items-center justify-center md:flex-nowrap">
             {[1, 2, 3, 4].map((stepIndex, index) => (
               <React.Fragment key={stepIndex}>
                 <div
-                  className={`relative flex h-8 w-8 items-center justify-center rounded-full ${
+                  className={`relative mb-10 flex h-6 w-6 items-center justify-center rounded-full ${
                     index < step ? "bg-primary" : "bg-gray-300"
                   } font-bold text-white`}
                 >
@@ -205,8 +207,8 @@ const Signup = () => {
                 </div>
                 {index < 3 && (
                   <hr
-                    className={`h-[5px] w-20 ${
-                      index < step - 1 ? "bg-primary" : "bg-gray-300"
+                  className={`h-[5px] mb-10 w-16 ${
+                    index < step - 1 ? "bg-primary" : "bg-gray-300"
                     } sm:w-[105px]`}
                   />
                 )}

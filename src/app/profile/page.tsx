@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import Image from "next/image";
 import Container from "~/_components/Container";
@@ -8,13 +9,15 @@ import {
   useGetProfileUpdate,
   useProfile,
   useUpdateProfile,
+  useUpdateProfilePicture,
 } from "~/APIs/hooks/useProfile";
 import { useGetAllNationalities } from "~/APIs/hooks/useAuth";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { type StudentProfileUpdate } from "~/types";
 import Button from "~/_components/Button";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { MdEdit } from "react-icons/md";
 
 const EditProfile = () => {
   const router = useRouter();
@@ -110,6 +113,53 @@ const EditProfile = () => {
     refetchProfile();
   };
 
+  // Profile Picture
+  const [preview, setPreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false); // For spinner
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const mutation = useUpdateProfilePicture({
+    onSuccess: () => {
+      toast.success("Profile picture updated successfully!");
+      setUploading(false); // Stop spinner
+      refetchDataUpdate();
+      refetchProfile();
+    },
+    onError: (error) => {
+      toast.error("Failed to update profile picture. Please try again.");
+      setUploading(false); // Stop spinner
+    },
+  });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+
+      // Validate file type and size
+      const validTypes = ["image/jpeg", "image/png", "image/webp"];
+      if (!validTypes.includes(file.type)) {
+        toast.error(
+          "Invalid file type. Please upload a JPG, PNG, or WEBP image.",
+        );
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        // 5MB limit
+        toast.error("File size exceeds 5MB. Please upload a smaller image.");
+        return;
+      }
+
+      setPreview(URL.createObjectURL(file)); // Preview the selected image
+      setUploading(true); // Show spinner while uploading
+      mutation.mutate(file); // Upload the picture
+    }
+  };
+
+  const handleEditClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
   if (isLoading || isNationalities || isLoadingdataUpdate) {
     return <Spinner />;
   }
@@ -122,16 +172,48 @@ const EditProfile = () => {
             Edit Profile
           </Text>
           <div className="mt-4 flex flex-col items-center">
-            <div>
-              <Image
-                priority
-                unoptimized
-                src={data?.data?.picture || "/images/userr.png"}
+            <div className="relative">
+              <img
+                src={preview ?? data?.data?.picture ?? "/images/userr.png"}
                 alt="Profile Photo"
                 width={100}
                 height={100}
-                className="rounded-full"
+                className="inline-block h-24 w-24 rounded-full ring-2 ring-bgSecondary"
               />
+
+              {/* Edit Button */}
+              <div className="relative">
+                <button
+                  onClick={handleEditClick}
+                  className="absolute -right-4 -top-4 mx-auto my-auto flex h-8 w-8 items-center justify-center rounded-full bg-primary p-2 text-white shadow-lg"
+                  aria-label="Edit Profile Picture"
+                  style={{ transform: "translate(-50%, -50%)" }}
+                >
+                  {uploading ? (
+                    <Spinner size={20} /> // Show spinner while uploading
+                  ) : (
+                    <MdEdit />
+                  )}
+                </button>
+              </div>
+
+              {/* Hidden File Input */}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+              />
+            </div>
+
+            <div className="flex flex-col items-center">
+              <Text font={"bold"} size={"2xl"} className="mt-2">
+                {data?.data?.name}
+              </Text>
+              <Text size={"xl"} color="gray" className="mb-2">
+                @{data?.data?.username}
+              </Text>
             </div>
             <div className="flex flex-col items-center">
               <Text font={"bold"} size={"2xl"} className="mt-2">
@@ -140,59 +222,59 @@ const EditProfile = () => {
               <Text size={"xl"} color="gray" className="mb-2">
                 @{data?.data?.username}
               </Text>
-          </div>
-          <div className="m-auto w-4/5">
-            <div className="flex gap-8">
-              <div>
-                <a href="/profile" className="text-xl text-primary underline">
-                  Personal Info.
-                </a>
-              </div>
-              <div>
-                <a href="/password" className="text-xl">
-                  Change Password{" "}
-                </a>
-              </div>
             </div>
+            <div className="m-auto w-4/5">
+              <div className="flex flex-col gap-8 md:flex-row">
+                <div>
+                  <a href="/profile" className="text-xl text-primary underline">
+                    Personal Info.
+                  </a>
+                </div>
+                <div>
+                  <a href="/password" className="text-xl">
+                    Change Password{" "}
+                  </a>
+                </div>
+              </div>
 
-            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <label htmlFor="name">Name</label>
-                <Input
-                  name="name"
-                  placeholder="Enter name"
-                  theme="transparent"
-                  border="gray"
-                  value={name}
-                  onChange={handleNameChange}
-                />
+              <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <label htmlFor="name">Name</label>
+                  <Input
+                    name="name"
+                    placeholder="Enter name"
+                    theme="transparent"
+                    border="gray"
+                    value={name}
+                    onChange={handleNameChange}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="gender">Gender</label>
+                  <select
+                    name="gender"
+                    id="gender"
+                    className="w-full rounded-lg border border-borderPrimary bg-bgPrimary p-3 text-textPrimary outline-none transition duration-200 ease-in"
+                    value={gender}
+                    onChange={handleGenderChange}
+                  >
+                    <option value="MALE">Male</option>
+                    <option value="FEMALE">Female</option>
+                  </select>
+                </div>
               </div>
-              <div>
-                <label htmlFor="gender">Gender</label>
-                <select
-                  name="gender"
-                  id="gender"
-                  className="w-full rounded-lg border border-borderPrimary bg-bgPrimary p-3 text-textPrimary outline-none transition duration-200 ease-in"
-                  value={gender}
-                  onChange={handleGenderChange}
+            </div>
+            <div className="flex justify-end">
+              <div className="mt-4 w-[150px]">
+                <Button
+                  className="rounded-lg bg-primary px-6 py-2 text-white"
+                  onClick={handleSubmit}
                 >
-                  <option value="MALE">Male</option>
-                  <option value="FEMALE">Female</option>
-                </select>
+                  Save Changes
+                </Button>
               </div>
             </div>
           </div>
-          <div className="flex justify-end">
-            <div className="mt-4 w-[150px]">
-              <Button
-                className="rounded-lg bg-primary px-6 py-2 text-white"
-                onClick={handleSubmit}
-              >
-                Save Changes
-              </Button>
-            </div>
-          </div>
-        </div>
         </div>
       </Container>
     </>

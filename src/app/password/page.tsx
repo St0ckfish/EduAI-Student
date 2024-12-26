@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -59,14 +60,12 @@ const ChangePassword = () => {
           </Text>
           <div className="mt-4 flex flex-col items-center">
             <div>
-              <Image
-                priority
-                unoptimized
-                src={data?.data?.picture || "/images/userr.png"}
+            <img
+                src={data?.data?.picture ?? "/images/userr.png"}
                 alt="Profile Photo"
                 width={100}
                 height={100}
-                className="rounded-full"
+                className="inline-block h-24 w-24 rounded-full ring-2 ring-bgSecondary"
               />
             </div>
             <div className="flex flex-col items-center">
@@ -79,7 +78,7 @@ const ChangePassword = () => {
             </div>
           </div>
           <div className="m-auto w-4/5">
-            <div className="flex gap-8">
+            <div className="flex flex-col gap-8 md:flex-row">
               <div>
                 <a href="/profile" className="text-xl">
                   Personal Info.

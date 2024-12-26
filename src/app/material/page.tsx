@@ -49,7 +49,6 @@ const Materials = () => {
   } = useGetSessionMaterials(selectedSessionId?.toString() || "");
   console.log("🚀 ~ Materials ~ dataSessionMaterials:", dataSessionMaterials);
 
-  // تغيير حالة إظهار المادة
   const toggleMaterialContent = (materialId: number) => {
     if (activeMaterialId === materialId) {
       setActiveMaterialId(null);
@@ -64,8 +63,8 @@ const Materials = () => {
         <Text font={"bold"} size={"2xl"}>
           Daily Plan
         </Text>
-        <div className="flex w-full justify-start gap-8 rounded-xl bg-bgPrimary p-8">
-          <div className="w-1/5">
+        <div className="flex w-full flex-col lg:flex-row justify-center md:justify-start items-center md:items-start gap-8 rounded-xl bg-bgPrimary p-8">
+        <div className="w-full md:w-1/5">
             <RadioGroup.Root
               className="gap-4"
               value={selectedGrade}
@@ -85,7 +84,7 @@ const Materials = () => {
                   <RadioGroup.Item
                     key={subject.sessionId}
                     value={subject.courseName}
-                    className="group mt-1 flex h-20 w-full flex-col justify-center rounded-l-2xl bg-lightGray px-4 text-center text-textPrimary transition hover:border-primary hover:text-primary focus-visible:ring focus-visible:ring-blue-200 focus-visible:ring-opacity-75 data-[state=checked]:border-primary data-[state=checked]:bg-primary"
+                    className="group mt-1 flex h-20 w-full flex-col justify-center rounded-l-2xl rounded-r-2xl lg:rounded-r-none bg-lightGray px-4 text-center text-textPrimary transition hover:border-primary hover:text-primary focus-visible:ring focus-visible:ring-blue-200 focus-visible:ring-opacity-75 data-[state=checked]:border-primary data-[state=checked]:bg-primary"
                     aria-labelledby={`${subject.courseName}-label`}
                   >
                     <div
@@ -103,7 +102,7 @@ const Materials = () => {
             </RadioGroup.Root>
           </div>
 
-          <div className="w-4/5">
+          <div className="w-full md:w-4/5">
             {/* Display the selected subject's materials */}
             {error && <p>Error loading materials: {error.message}</p>}
             {dataSessionMaterials?.data?.length ? (

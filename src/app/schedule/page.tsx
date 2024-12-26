@@ -28,7 +28,7 @@ const Schedule = () => {
 
         <div className="flex w-full overflow-auto rounded-md bg-white p-4">
           <div className="relative w-full overflow-auto sm:rounded-lg">
-            <p className="mb-3 font-semibold">Today’s sessions</p>
+            <p className="mb-3 font-semibold">Today&apos;s sessions</p>
             <table className="w-full overflow-x-auto p-4 text-left text-sm text-black">
               <thead className="bg-thead text-textPrimary text-xs uppercase">
                 <tr>
