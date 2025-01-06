@@ -206,15 +206,6 @@ const EditProfile = () => {
                 onChange={handleFileChange}
               />
             </div>
-
-            <div className="flex flex-col items-center">
-              <Text font={"bold"} size={"2xl"} className="mt-2">
-                {data?.data?.name}
-              </Text>
-              <Text size={"xl"} color="gray" className="mb-2">
-                @{data?.data?.username}
-              </Text>
-            </div>
             <div className="flex flex-col items-center">
               <Text font={"bold"} size={"2xl"} className="mt-2">
                 {data?.data?.name}
