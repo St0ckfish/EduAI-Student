@@ -4,7 +4,7 @@ import Container from "~/_components/Container";
 import Modal from "~/_components/Modal";
 import SearchableSelect from "~/_components/SearchSelect";
 import Spinner from "~/_components/Spinner";
-import { useAllUsersChat, useCreateNewChat, useDeleteChat, useAllChats } from "~/APIs/hooks/";
+import { useAllUsersChat, useCreateNewChat, useDeleteChat, useAllChats } from "~/APIs/hooks/useChat";
 import { useChatListSocket } from "~/hooks/useRealTimeAllChats";
 import ChatPage from "./chatPage/chat";
 import { useCallback, useEffect, useState } from "react";
