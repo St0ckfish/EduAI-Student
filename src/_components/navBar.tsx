@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AiFillHome } from "react-icons/ai";
 import { FaNewspaper } from "react-icons/fa6";
@@ -17,33 +17,6 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useBooleanValue, useUserDataStore } from "~/APIs/store";
 import { useProfile } from "~/APIs/hooks/useProfile";
 import { useNotificationsWebSocket } from "~/hooks/useNotifications";
-
-const useWindowDimensions = () => {
-
-  const isClient = typeof window === "object";
-  const [windowSize, setWindowSize] = useState(
-    isClient
-      ? { width: window.innerWidth, height: window.innerHeight }
-      : { width: undefined, height: undefined },
-  );
-
-  useEffect(() => {
-    if (!isClient) {
-      return;
-    }
-
-    const handleResize = () => {
-      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-    };
-
-    window.addEventListener("resize", handleResize);
-    handleResize();
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, [isClient]);
-
-  return windowSize;
-};
 
 interface NavBarLinkProps {
   href: string;
@@ -128,8 +101,32 @@ const NavBar = () => {
     picture: dataUpdate?.data.picture, 
 });
 const userData = useUserDataStore.getState().userData;
+const navbarRef = useRef<HTMLDivElement>(null);
+  const toggleNavbar = () => {
+    setIsOpen((prev) => !prev);
+  };
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      navbarRef.current &&
+      !navbarRef.current.contains(event.target as Node)
+    ) {
+      setIsOpen(false);
+    }
+  };
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
   const userId = userData.id;
   const { notificationsCount, isConnected } = useNotificationsWebSocket(userId);
+
   const OpenSideBar = () => {
     setIsOpen(!isOpen);
   };
@@ -138,13 +135,6 @@ const userData = useUserDataStore.getState().userData;
     Cookie.remove("token");
   };
 
-  const { width } = useWindowDimensions();
-
-  useEffect(() => {
-    if (width !== undefined && width >= 1023) {
-      setIsOpen(true);
-    }
-  }, [width]);
 
   const navLinks = [
     { href: "/", icon: AiFillHome, label: "Home" },
@@ -163,7 +153,11 @@ const userData = useUserDataStore.getState().userData;
 
   return (
     <>
-      <header>
+    
+    {isOpen && (
+        <div className="fixed inset-0 z-40 bg-black bg-opacity-40" onClick={toggleNavbar}></div>
+      )}
+      <header ref={navbarRef}>
         <div>
           <header
             className={`sticky inset-x-0 top-0 z-[48] flex w-full flex-wrap bg-bgPrimary py-2.5 text-sm sm:flex-nowrap sm:justify-start sm:py-4 lg:ps-64`}
@@ -369,15 +363,16 @@ const userData = useUserDataStore.getState().userData;
               </button>
             </div>
           </div>
-          {isOpen && (
+          
             <div
               dir={"ltr"}
               id="application-sidebar"
-              className={`hs-overlay hs-overlay-open:translate-x-0 transform transition-all duration-300 [--auto-close:lg] ${
+              className={` transform transition-all duration-300  ${
                 small ? "w-[90px]" : "w-[260px]"
               } drop-shadow-2xl lg:drop-shadow-none ${
-                !isOpen ? "w-0" : ""
-              } fixed inset-y-0 start-0 z-[60] bg-bgPrimary duration-300 ease-in lg:bottom-0 lg:end-auto lg:block lg:translate-x-0 `}
+                isOpen ? "max-lg:translate-x-0" 
+                    : "max-lg:-translate-x-full"
+              } fixed inset-y-0 start-0 z-[60] bg-bgPrimary duration-300 ease-in lg:bottom-0 lg:end-auto lg:block ${small ? "" : "overflow-y-auto"}`}
             >
               <div className="px-8 pt-4">
                 <Link href="/">
@@ -420,9 +415,7 @@ const userData = useUserDataStore.getState().userData;
               </div>
 
               <nav
-                className={`hs-accordion-group flex w-full flex-col flex-wrap p-6 ${
-                  !isOpen ? "hidden" : ""
-                } `}
+                className={`hs-accordion-group flex w-full flex-col flex-wrap p-6 `}
                 data-hs-accordion-always-open
               >
                 <ul className="space-y-1.5">
@@ -512,7 +505,7 @@ const userData = useUserDataStore.getState().userData;
                 </ul>
               </nav>
             </div>
-          )}
+          
         </div>
       </header>
     </>
