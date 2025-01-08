@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { useGetAllMessages } from "~/APIs/hooks/";
+import { useGetAllMessages } from "~/APIs/hooks/useChat";
 import { Client, type IMessage } from "@stomp/stompjs";
 import Cookies from "js-cookie";
 import { useEffect, useRef, useState } from "react";
