@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, Send } from 'lucide-react';
 import Container from '~/_components/Container';
 import { useAskQuestion, useGetChatHitory, useLoadSubject } from '~/APIs/hooks/useMaterial';
@@ -10,6 +10,8 @@ import { useCourseStore } from '~/APIs/store';
 const AiChat = () => {
     const { courseId } = useParams();
     const [question, setQuestion] = useState('');
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const chatContainerRef = useRef<HTMLDivElement>(null);
     
     interface ChatMessage {
         type: 'user' | 'ai' | 'error';
@@ -21,22 +23,27 @@ const AiChat = () => {
     const { courseRegistrationId } = useCourseStore();
 
     const { data: historicalChat, isLoading: isLoadingHistory } = useGetChatHitory(courseRegistrationId ?? '');
-    console.log(historicalChat);
-    
     const { isLoading } = useLoadSubject(courseId as string);
     const { mutate: askQuestion, isPending: isLoadingQuestion } = useAskQuestion();
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    // Effect to handle auto-scrolling
+    useEffect(() => {
+        scrollToBottom();
+    }, [chatHistory, isLoadingQuestion]);
 
     // Effect to load historical chat messages
     useEffect(() => {
         if (historicalChat?.data?.content) {
             const formattedHistory = historicalChat.data.content.map((chat: { question: any; askedAt: any; response: string; }) => ([
-                // User message
                 {
                     type: 'user' as const,
                     content: chat.question,
                     timestamp: chat.askedAt
                 },
-                // AI response
                 {
                     type: 'ai' as const,
                     content: JSON.parse(chat.response).response,
@@ -51,30 +58,25 @@ const AiChat = () => {
     const handleSendQuestion = () => {
         if (!question.trim()) return;
 
-        // Add user's question to chat
         setChatHistory(prev => [...prev, {
             type: 'user',
             content: question,
             timestamp: new Date().toISOString()
         }]);
 
-        // Call API
         askQuestion({
             courseId: courseId,
             question: question
         }, {
             onSuccess: (response) => {
-                // Parse the response string to get the actual response content
                 const parsedResponse = JSON.parse(response.response);
                 
-                // Add AI's response to chat
                 setChatHistory(prev => [...prev, {
                     type: 'ai',
                     content: parsedResponse.response,
                     timestamp: response.askedAt
                 }]);
 
-                // Clear input
                 setQuestion('');
             },
             onError: (error) => {
@@ -96,40 +98,38 @@ const AiChat = () => {
     return (
         <Container>
             <div className="h-[800px] flex">
-                {/* Main Chat Area */}
                 <div className="flex-1 flex flex-col">
-                    {/* Chat Messages */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                        {/* Initial AI Message */}
+                    <div 
+                        ref={chatContainerRef}
+                        className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth"
+                    >
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                                <MessageCircle className="w-5 h-5 text-white" />
+                                <MessageCircle className="w-5 h-5 text-textPrimary" />
                             </div>
                             <div className="flex flex-col gap-1">
                                 <p className="text-lg">Hello! How can I assist you today? 👋</p>
                             </div>
                         </div>
 
-                        {/* Loading History Indicator */}
                         {isLoadingHistory && (
                             <Spinner/>
                         )}
 
-                        {/* Chat History */}
                         {chatHistory.map((message, index) => (
                             <div key={index} className={`flex items-start gap-3 ${message.type === 'user' ? 'justify-end' : ''}`}>
                                 {message.type === 'ai' && (
                                     <div className="min-w-8 min-h-8 rounded-full bg-primary flex items-center justify-center">
-                                        <MessageCircle className="w-5 h-5 text-white" />
+                                        <MessageCircle className="w-5 h-5 text-textPrimary" />
                                     </div>
                                 )}
                                 <div className={`flex flex-col gap-1 ${message.type === 'user' ? 'items-end' : ''}`}>
                                     <div className={`p-3 rounded-lg ${
                                         message.type === 'user' 
-                                            ? 'bg-primary text-white' 
+                                            ? 'bg-primary text-textPrimary' 
                                             : message.type === 'error'
                                             ? 'bg-red-100 text-red-600'
-                                            : 'bg-gray-100'
+                                            : 'bg-bgSecondary'
                                     }`}>
                                         <p className="text-sm">{message.content}</p>
                                     </div>
@@ -142,22 +142,23 @@ const AiChat = () => {
                             </div>
                         ))}
 
-                        {/* Loading indicator */}
                         {isLoadingQuestion && (
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center animate-pulse">
-                                    <MessageCircle className="w-5 h-5 text-white" />
+                                    <MessageCircle className="w-5 h-5 text-textPrimary" />
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <p className="text-sm text-gray-500">Thinking...</p>
                                 </div>
                             </div>
                         )}
+                        
+                        {/* Invisible div for scrolling reference */}
+                        <div ref={messagesEndRef} />
                     </div>
 
-                    {/* Input Area */}
                     <div className="border-t p-4">
-                        <div className="flex items-center gap-2 bg-white rounded-lg border p-2">
+                        <div className="flex items-center gap-2 bg-bgPrimary rounded-lg border p-2">
                             <input
                                 type="text"
                                 value={question}
@@ -172,7 +173,7 @@ const AiChat = () => {
                                 onClick={handleSendQuestion}
                                 disabled={isLoadingQuestion}
                             >
-                                <Send className="w-4 h-4 text-white" />
+                                <Send className="w-4 h-4 text-textPrimary" />
                             </button>
                         </div>
                     </div>

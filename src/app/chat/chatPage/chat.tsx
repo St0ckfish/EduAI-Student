@@ -5,7 +5,6 @@ import { Client, type IMessage } from "@stomp/stompjs";
 import Cookies from "js-cookie";
 import { useEffect, useRef, useState } from "react";
 import { MessageBubble } from "~/_components/MessageBubble";
-import Link from "next/link";
 import { toast } from "react-toastify";
 import { baseUrlStock } from "~/APIs/axios";
 import { useUserDataStore } from "~/APIs/store";
@@ -84,7 +83,7 @@ const handleEmojiSelect = (emoji: string) => {
   }, [showEmojiPicker]);
   const token = Cookies.get("token");
   const { data: messagesData, isLoading, error } = useGetAllMessages(userId ?? '');
-const userData = useUserDataStore.getState().userData;
+  const userData = useUserDataStore.getState().userData;
   const currentUserName = userData.name_en;
 
   const stompClientRef = useRef<Client | null>(null);
