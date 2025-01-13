@@ -493,7 +493,7 @@ const navbarRef = useRef<HTMLDivElement>(null);
                           Exam{" "}
                         </Link>
                         <Link
-                          className={`hover:text-primary ${url === "/exercises" ? "text-primary" : "textPrimary"}`}
+                          className={`hover:text-primary ${url === "/material" ? "text-primary" : "textPrimary"}`}
                           href="/material"
                         >
                           {" "}

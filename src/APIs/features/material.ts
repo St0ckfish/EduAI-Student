@@ -21,3 +21,31 @@ export const getSessionMaterials = async (sessionId: string): Promise<SessionMat
   );
   return response.data;
 };
+
+export const getChatHitory = async (courseId: string): Promise<any> => {
+  const response = await axiosInstance.get<any>(
+    `/api/v1/aiassistant/chat-history/course/${courseId}`
+  );
+  return response.data;
+};
+
+export const getAllSubjects = async (): Promise<any> => {
+  const response = await axiosInstance.get<any>(
+    `/api/v1/student/course-registrations/all`
+  );
+  return response.data;
+};
+
+export const loadSubject = async (courseId: string): Promise<any> => {
+  const response = await axiosInstance.post<any>(
+    `/api/v1/aiassistant/chat-history/load-course-data?courseId=${courseId}`
+  );
+  return response.data;
+};
+
+export const askQuestion = async (courseId: string, question: string): Promise<any> => {
+  const response = await axiosInstance.post<any>(
+    `/api/v1/aiassistant/chat-history/ask-question?courseId=${courseId}&question=${question}`,
+  );
+  return response.data;
+};

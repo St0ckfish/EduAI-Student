@@ -61,3 +61,26 @@ export const useUserDataStore = create<UserDataState>((set) => ({
 }))
 
 //
+
+interface CourseState {
+    courseRegistrationId: string | null
+    setCourseRegistrationId: (id: string) => void
+}
+
+export const useCourseStore = create<CourseState>((set) => ({
+    courseRegistrationId: null,
+    setCourseRegistrationId: (id) => {
+        try {
+            // Store in localStorage
+            localStorage.setItem("courseId", id);
+            
+            // Update Zustand state
+            set({ courseRegistrationId: id });
+            
+            return true;
+        } catch (error) {
+            console.error('Error storing course registration ID:', error);
+            return false;
+        }
+    }
+}))
