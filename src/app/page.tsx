@@ -20,6 +20,7 @@ import Link from "next/link";
 import { useGetAllCommingSchedule, useGetAttendance, useGetGpa, useGetUpCommingEvents } from "~/APIs/hooks/useHome";
 import Spinner from "~/_components/Spinner";
 import { formatDate } from "~/hooks/useFormatDate";
+import { IoTrendingDown, IoTrendingUp } from "react-icons/io5";
 const chartData = [
   { month: "January", gpa: 186, attendance: 80, class: 20, behavior: 54 },
   { month: "February", gpa: 305, attendance: 200, class: 24, behavior: 56 },
@@ -210,13 +211,13 @@ export default function Home() {
                       <Text font={"semiBold"} color={"gray"}>
                         GPA
                       </Text>
-                      <Text font={"semiBold"}>{gpa?.currentGpa}</Text>
+                      <Text className="flex gap-2 items-center" font={"semiBold"}>{gpa?.currentGpa} {gpa?.currentGpa >= 2.5 ? <IoTrendingUp className="text-green-500"/> : <IoTrendingDown className="text-red-500"/>}</Text>
                     </Box>
                     <Box shadow="md">
                       <Text font={"semiBold"} color={"gray"}>
                         Attendance
                       </Text>
-                      <Text font={"semiBold"}>{attendance?.currentAttendance}%</Text>
+                      <Text className="flex gap-2 items-center" font={"semiBold"}>{attendance?.currentAttendance}% {attendance?.currentAttendance >= 50 ? <IoTrendingUp className="text-green-500"/> : <IoTrendingDown className="text-red-500"/>}</Text>
                     </Box>
                   </BoxGrid>
               }
