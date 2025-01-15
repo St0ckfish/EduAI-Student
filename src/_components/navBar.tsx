@@ -5,18 +5,22 @@ import Link from "next/link";
 import { AiFillHome } from "react-icons/ai";
 import { FaNewspaper } from "react-icons/fa6";
 import { HiOutlineSquares2X2 } from "react-icons/hi2";
-import { FaBusAlt } from "react-icons/fa";
+import { FaBusAlt, FaQuestion } from "react-icons/fa";
 import { CiSquareCheck } from "react-icons/ci";
 import { usePathname } from "next/navigation";
 import { RiRobot2Fill } from "react-icons/ri";
 import { useTheme } from "next-themes";
 import Spinner from "./Spinner";
+import { HiOutlineNewspaper } from "react-icons/hi2";
 import { Switch } from "~/components/ui/switch";
 import Cookie from "js-cookie";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useBooleanValue, useUserDataStore } from "~/APIs/store";
 import { useProfile } from "~/APIs/hooks/useProfile";
 import { useNotificationsWebSocket } from "~/hooks/useNotifications";
+import { SiGnuprivacyguard } from "react-icons/si";
+import { FaQuoteLeft } from "react-icons/fa6";
+import { FcSupport } from "react-icons/fc";
 
 interface NavBarLinkProps {
   href: string;
@@ -252,7 +256,7 @@ const navbarRef = useRef<HTMLDivElement>(null);
                   </Link>
 
                   <div className="hs-dropdown relative inline-flex [--placement:bottom-right]">
-                    <DropdownMenu.Root>
+                  <DropdownMenu.Root>
                       <DropdownMenu.Trigger asChild>
                         <button
                           onClick={toggleProfile}
@@ -261,7 +265,7 @@ const navbarRef = useRef<HTMLDivElement>(null);
                           className="border-bgSeconday hover:bg-thead inline-flex h-[2.375rem] w-[2.375rem] items-center justify-center gap-x-2 rounded-full border text-sm font-semibold text-gray-800 outline-none disabled:pointer-events-none disabled:opacity-50"
                         >
                           <div>
-                          <img
+                            <img
                               className="inline-block h-[38px] w-[38px] rounded-full ring-2 ring-bgSecondary"
                               src={`${userData.picture ?? "/images/userr.png"}`}
                               alt="User Avatar"
@@ -282,7 +286,7 @@ const navbarRef = useRef<HTMLDivElement>(null);
                               Signed in as
                             </p>
                             <p className="text-textPrimary text-sm font-medium">
-                            {userData?.email}
+                              {userData?.email}
                             </p>
                           </div>
                           <div className="mt-2 py-2">
@@ -309,6 +313,51 @@ const navbarRef = useRef<HTMLDivElement>(null);
                                   <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                                 </svg>
                                 Profile
+                              </Link>
+                            </DropdownMenu.Item>
+                            <DropdownMenu.Item asChild>
+                            <Link
+                                className="text-textPrimary flex items-center gap-x-3.5 rounded-lg border-none px-3 py-2 text-sm outline-none hover:bg-bgSecondary"
+                                href="/about"
+                              >
+                                <FaQuoteLeft />
+                                About Us
+                              </Link>
+                            </DropdownMenu.Item>
+                            <DropdownMenu.Item asChild>
+                            <Link
+                                className="text-textPrimary flex items-center gap-x-3.5 rounded-lg border-none px-3 py-2 text-sm outline-none hover:bg-bgSecondary"
+                                href="/faq"
+                              >
+                                <FaQuestion />
+                                FAQ
+                              </Link>
+                            </DropdownMenu.Item>
+                            <DropdownMenu.Item asChild>
+                            <Link
+                                className="text-textPrimary flex items-center gap-x-3.5 rounded-lg border-none px-3 py-2 text-sm outline-none hover:bg-bgSecondary"
+                                href="/terms"
+                              >
+                                <HiOutlineNewspaper />
+                                Terms and Conditions
+                              </Link>
+                            </DropdownMenu.Item>
+                            <DropdownMenu.Item asChild>
+                            <Link
+                                className="text-textPrimary flex items-center gap-x-3.5 rounded-lg border-none px-3 py-2 text-sm outline-none hover:bg-bgSecondary"
+                                href="/privacy"
+                              >
+                                <SiGnuprivacyguard />
+                                Privacy Policy
+                              </Link>
+                            </DropdownMenu.Item>
+                            <DropdownMenu.Item asChild>
+                            <Link
+                                className="text-textPrimary flex items-center gap-x-3.5 rounded-lg border-none px-3 py-2 text-sm outline-none hover:bg-bgSecondary"
+                                href="/support"
+                              >
+                                <FcSupport />
+                                Support
                               </Link>
                             </DropdownMenu.Item>
                             <DropdownMenu.Item asChild>
