@@ -191,6 +191,7 @@ const navbarRef = useRef<HTMLDivElement>(null);
       <header ref={navbarRef}>
         <div>
           <header
+          dir={language === "ar" ? "rtl" : "ltr"}
             className={`sticky inset-x-0 top-0 z-[48] flex w-full flex-wrap bg-bgPrimary py-2.5 text-sm sm:flex-nowrap sm:justify-start sm:py-4 lg:ps-64`}
           >
             <nav
@@ -470,7 +471,7 @@ const navbarRef = useRef<HTMLDivElement>(null);
           </div>
           
             <div
-              dir={"ltr"}
+              dir={language === "ar" ? "rtl" : "ltr"}
               id="application-sidebar"
               className={` transform transition-all duration-300  ${
                 small ? "w-[90px]" : "w-[260px]"
