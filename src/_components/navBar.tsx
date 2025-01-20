@@ -166,7 +166,7 @@ const navbarRef = useRef<HTMLDivElement>(null);
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  
+
   const navLinks = [
     { href: "/", icon: AiFillHome, label: translate("Home", "Accueil", "الرئيسية") },
     { href: "/ai", icon: RiRobot2Fill, label: translate("AI", "IA", "الذكاء الاصطناعي") },
@@ -284,7 +284,7 @@ const navbarRef = useRef<HTMLDivElement>(null);
 
                   <div className="relative" ref={dropdownRef}>
       <button
-        className="flex items-center gap-2 px-4 py-2 border rounded-md hover:bg-gray-50"
+        className="flex items-center gap-2 px-4 py-2 border rounded-md hover:bg-bgSecondary"
         onClick={() => setIsOpenL(!isOpenL)}
       >
         <Globe className="h-4 w-4" />
@@ -292,7 +292,7 @@ const navbarRef = useRef<HTMLDivElement>(null);
       </button>
       
       {isOpenL && (
-        <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg">
+        <div className="absolute right-0 mt-2 w-48 bg-bgPrimary border rounded-md shadow-lg">
           {languages.map((lang) => (
             <button
               key={lang.code}
@@ -300,8 +300,8 @@ const navbarRef = useRef<HTMLDivElement>(null);
                 setLanguage(lang.code)
                 setIsOpenL(false)
               }}
-              className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${
-                language === lang.code ? 'bg-gray-100' : ''
+              className={`w-full text-left px-4 py-2 hover:bg-bgSecondary ${
+                language === lang.code ? 'bg-bgSecondary' : ''
               }`}
             >
               {lang.label}
