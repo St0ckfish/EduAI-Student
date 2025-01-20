@@ -1,14 +1,15 @@
-"use client"
+"use client";
 /* eslint-disable @next/next/no-img-element */
 import { useState } from "react";
 import Container from "~/_components/Container";
 import Spinner from "~/_components/Spinner";
 import { Text } from "~/_components/Text";
-import { 
-  useGetAllAcademicYear, 
-  useGetSemesterByYear, 
+import {
+  useGetAllAcademicYear,
+  useGetSemesterByYear,
   useGetAllGrades,
 } from "~/APIs/hooks/useGrades";
+import useLanguageStore from "~/APIs/store";
 import {
   Select,
   SelectContent,
@@ -18,29 +19,32 @@ import {
 } from "~/components/ui/select";
 
 const Grades = () => {
-  // State for selections
   const [selectedAcademicYear, setSelectedAcademicYear] = useState<string | null>(null);
   const [selectedSemester, setSelectedSemester] = useState<string | null>(null);
 
-  // Fetch hooks
+  const translate = (en: string, fr: string, ar: string) => {
+    const language = useLanguageStore.getState().language;
+    return language === "fr" ? fr : language === "ar" ? ar : en;
+  };
+
   const { data: academicYears, isLoading: isLoadingYears } = useGetAllAcademicYear();
   const { data: semesters, isLoading: isLoadingSemesters } = useGetSemesterByYear(
     selectedAcademicYear ?? ""
   );
   const { data: gradesData, isLoading: isLoadingGrades } = useGetAllGrades(
-    selectedSemester ?? "",
+    selectedSemester ?? ""
   );
 
   return (
     <Container>
       <div className="flex w-full items-center justify-between gap-4">
-      {/* Academic Year Select */}
-        <Select 
-          value={selectedAcademicYear || ""} 
+        {/* Academic Year Select */}
+        <Select
+          value={selectedAcademicYear || ""}
           onValueChange={setSelectedAcademicYear}
         >
           <SelectTrigger className={`w-full border bg-bgPrimary border-borderPrimary`}>
-            <SelectValue placeholder="Select Academic Year" />
+            <SelectValue placeholder={translate("Select Academic Year", "Sélectionnez une année académique", "اختر السنة الدراسية")} />
           </SelectTrigger>
           <SelectContent>
             {academicYears?.data?.map((year: any) => (
@@ -52,61 +56,56 @@ const Grades = () => {
         </Select>
 
         {/* Semester Select */}
-        <Select 
-          value={selectedSemester ?? ""} 
+        <Select
+          value={selectedSemester ?? ""}
           onValueChange={setSelectedSemester}
           disabled={!selectedAcademicYear}
         >
           <SelectTrigger className={`w-full border bg-bgPrimary border-borderPrimary`}>
-            <SelectValue placeholder="Select Semester" />
+            <SelectValue placeholder={translate("Select Semester", "Sélectionnez un semestre", "اختر الفصل الدراسي")} />
           </SelectTrigger>
           <SelectContent>
-            {semesters?.data?.map((semester:any) => (
+            {semesters?.data?.map((semester: any) => (
               <SelectItem key={semester.id} value={semester.id.toString()}>
                 {semester.name}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-
-        {/* Student Select */}
       </div>
 
       <div className="mt-10 flex h-full w-full items-center justify-center">
         <div className="flex w-full rounded-md bg-bgPrimary p-4">
           <div className="relative w-full overflow-x-auto sm:rounded-lg">
             <Text font="bold" size="2xl" className="mb-4">
-              Continuous Evaluation Scores
+              {translate("Continuous Evaluation Scores", "Scores d'évaluation continue", "درجات التقييم المستمر")}
             </Text>
-            
+
             {/* Loading and Empty States */}
             {isLoadingYears || isLoadingSemesters || isLoadingGrades ? (
               <div className="flex w-full justify-center">
-              <Spinner />
-            </div>
+                <Spinner />
+              </div>
             ) : (
               <table className="w-full overflow-x-auto p-4 text-left text-sm text-textPrimary border-separate border-spacing-y-2">
                 <thead className="text-textPrimary text-xs uppercase">
                   <tr>
-                    <th scope="col" className="whitespace-nowrap px-6 py-3">points</th>
-                    <th scope="col" className="whitespace-nowrap px-6 py-3">course Name</th>
-                    <th scope="col" className="whitespace-nowrap px-6 py-3">first Exam Score</th>
-                    <th scope="col" className="whitespace-nowrap px-6 py-3">second Exam Score</th>
-                    <th scope="col" className="whitespace-nowrap px-6 py-3">third Exam Score</th>
-                    <th scope="col" className="whitespace-nowrap px-6 py-3">fourth Exam Score</th>
-                    <th scope="col" className="whitespace-nowrap px-6 py-3">continuous Assessment</th>
-                    <th scope="col" className="whitespace-nowrap px-6 py-3">coefficient</th>
-                    <th scope="col" className="whitespace-nowrap px-6 py-3">passed Course</th>
-                    <th scope="col" className="whitespace-nowrap px-6 py-3">gpa</th>
+                    <th>{translate("Points", "Points", "النقاط")}</th>
+                    <th>{translate("Course Name", "Nom du cours", "اسم المادة")}</th>
+                    <th>{translate("First Exam Score", "Score du premier examen", "درجة الامتحان الأول")}</th>
+                    <th>{translate("Second Exam Score", "Score du deuxième examen", "درجة الامتحان الثاني")}</th>
+                    <th>{translate("Third Exam Score", "Score du troisième examen", "درجة الامتحان الثالث")}</th>
+                    <th>{translate("Fourth Exam Score", "Score du quatrième examen", "درجة الامتحان الرابع")}</th>
+                    <th>{translate("Continuous Assessment", "Évaluation continue", "التقييم المستمر")}</th>
+                    <th>{translate("Coefficient", "Coefficient", "المعامل")}</th>
+                    <th>{translate("Passed Course", "Cours réussi", "المادة ناجحة")}</th>
+                    <th>{translate("GPA", "Moyenne générale", "المعدل التراكمي")}</th>
                   </tr>
                 </thead>
-                <tbody className="rounded-lg">
+                <tbody>
                   {gradesData?.courses?.length ? (
-                    gradesData.courses?.map((grade:any, index:any) => (
-                      <tr 
-                        key={index} 
-                        className="bg-bgSecondary font-semibold hover:bg-primary hover:text-white"
-                      >
+                    gradesData.courses.map((grade: any, index: number) => (
+                      <tr key={index} className="bg-bgSecondary font-semibold hover:bg-primary hover:text-white">
                         <th scope="row" className="whitespace-nowrap rounded-s-2xl px-6 py-4 font-medium text-textSecondary">
                           {grade.points || '-'}
                         </th>
@@ -121,33 +120,25 @@ const Grades = () => {
                         <td className="whitespace-nowrap rounded-e-2xl px-6 py-4">
                           {grade.gpa || '-'}
                         </td>
+
                       </tr>
                     ))
                   ) : (
-                    <tr className="bg-bgSecondary font-semibold hover:bg-primary hover:text-white">
-                      <th
-                        colSpan={10}
-                        className="text-center whitespace-nowrap rounded-2xl px-6 py-4 font-medium text-textSecondary "
-                      >
-                        No grades found
-                      </th>
+                    <tr>
+                      <td colSpan={10} className="text-center">
+                        {translate("No grades found", "Aucune note trouvée", "لا توجد درجات")}
+                      </td>
                     </tr>
                   )}
                 </tbody>
               </table>
             )}
-            <span className="flex gap-2">
-              <p className="font-semibold">Average</p>
-              <p className="">{gradesData?.averageOfThisSemester || '-'}</p>
-            </span>
-            <span className="flex gap-2">
-              <p className="font-semibold">Total Coefficient</p>
-              <p className="">{gradesData?.totalCoefficient || '-'}</p>
-            </span>
-            <span className="flex gap-2">
-              <p className="font-semibold">Total GPA</p>
-              <p className="">{gradesData?.totalGPA || '-'}</p>
-            </span>
+
+            <div className="mt-4">
+              <div>{translate("Average", "Moyenne", "المعدل")}: {gradesData?.averageOfThisSemester || '-'}</div>
+              <div>{translate("Total Coefficient", "Coefficient total", "إجمالي المعامل")}: {gradesData?.totalCoefficient || '-'}</div>
+              <div>{translate("Total GPA", "Moyenne générale totale", "إجمالي المعدل التراكمي")}: {gradesData?.totalGPA || '-'}</div>
+            </div>
           </div>
         </div>
       </div>

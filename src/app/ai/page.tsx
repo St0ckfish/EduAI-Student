@@ -15,7 +15,7 @@ import { FaLanguage } from "react-icons/fa";
 import Link from "next/link";
 import { useGetAllStudentSubjects } from "~/APIs/hooks/useMaterial";
 import Spinner from "~/_components/Spinner";
-import { useCourseStore } from "~/APIs/store";
+import useLanguageStore, { useCourseStore } from "~/APIs/store";
 
 const AI = () => {
   const { data, isLoading } = useGetAllStudentSubjects();
@@ -42,6 +42,11 @@ const AI = () => {
     setCourseRegistrationId(id); // Assuming you're using the Zustand store
 }
 
+const translate = (en: string, fr: string, ar: string) => {
+  const language = useLanguageStore.getState().language; // Assuming useLanguageStore manages language state
+  return language === "fr" ? fr : language === "ar" ? ar : en;
+};
+
   if (isLoading) {
     return <Spinner/>;
   }
@@ -49,17 +54,16 @@ const AI = () => {
   return (
     <Container>
       <Box>
-        <Text font={"bold"} size={"2xl"}>
-          AI Assistant
-        </Text>
+      <Text font={"bold"} size={"2xl"}>
+  {translate("AI Assistant", "Assistant IA", "المساعد الذكي")}
+</Text>
         <Text
           font={"medium"}
           size={"2xl"}
           className="flex flex-col items-center gap-4 mt-10 sm:flex-row sm:gap-2 sm:items-start"
         >
           <Image src="/images/ai.svg" alt="#" width={50} height={50} />
-          Hello! How can I assist you today? 👋🏻
-        </Text>
+          {translate("Hello! How can I assist you today? 👋🏻", "Bonjour ! Comment puis-je vous aider aujourd'hui ? 👋🏻", "مرحبًا! كيف يمكنني مساعدتك اليوم؟ 👋🏻")}        </Text>
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mt-10">
           {data?.map((subject: { courseId: string; id: string; courseName: string  }) => (
             <Link

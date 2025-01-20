@@ -8,6 +8,7 @@ import { useGetAllHomeWorks } from "~/APIs/hooks/useHomeWork";
 import { format } from "date-fns";
 import Spinner from "~/_components/Spinner";
 import type { Homework } from "~/types";
+import useLanguageStore from "~/APIs/store";
 
 function CalendarDemo({
   onDateSelect,
@@ -38,32 +39,37 @@ const Homework = () => {
     number | null
   >(null);
 
+  const translate = (en: string, fr: string, ar: string) => {
+    const language = useLanguageStore.getState().language;
+    return language === "fr" ? fr : language === "ar" ? ar : en;
+  };
+
   function formatDateTimeBeautifully(dateString: string): string {
     const date = new Date(dateString);
 
     const dayNames = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
+      translate("Sunday", "Dimanche", "الأحد"),
+      translate("Monday", "Lundi", "الاثنين"),
+      translate("Tuesday", "Mardi", "الثلاثاء"),
+      translate("Wednesday", "Mercredi", "الأربعاء"),
+      translate("Thursday", "Jeudi", "الخميس"),
+      translate("Friday", "Vendredi", "الجمعة"),
+      translate("Saturday", "Samedi", "السبت"),
     ];
 
     const monthNames = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
+      translate("January", "Janvier", "يناير"),
+      translate("February", "Février", "فبراير"),
+      translate("March", "Mars", "مارس"),
+      translate("April", "Avril", "أبريل"),
+      translate("May", "Mai", "مايو"),
+      translate("June", "Juin", "يونيو"),
+      translate("July", "Juillet", "يوليو"),
+      translate("August", "Août", "أغسطس"),
+      translate("September", "Septembre", "سبتمبر"),
+      translate("October", "Octobre", "أكتوبر"),
+      translate("November", "Novembre", "نوفمبر"),
+      translate("December", "Décembre", "ديسمبر"),
     ];
 
     const dayName = dayNames[date.getDay()];
@@ -80,22 +86,26 @@ const Homework = () => {
 
     const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
 
-    return `${dayName}, ${monthName} ${dayOfMonth}, ${year} at ${hours}:${formattedMinutes} ${ampm}`;
+    return `${dayName}, ${monthName} ${dayOfMonth}, ${year} ${translate(
+      "at",
+      "à",
+      "في"
+    )} ${hours}:${formattedMinutes} ${ampm}`;
   }
+
   const formattedDate = React.useMemo(
     () => format(selectedDate, "yyyy-MM-dd"),
-    [selectedDate],
+    [selectedDate]
   );
 
   const { data: homeworks, isLoading: isHomework } = useGetAllHomeWorks(
-    formattedDate,
+    formattedDate
   );
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
     setSelectedSessionId(null);
   };
-
 
   return (
     <Container>
@@ -107,10 +117,9 @@ const Homework = () => {
         <div className="grid w-full gap-2 rounded-md bg-bgPrimary p-4">
           <div className="flex w-full items-start justify-between">
             <Text font={"bold"} size={"2xl"}>
-              Homework
+              {translate("Homework", "Devoirs", "الواجبات")}
             </Text>
           </div>
-          {/* Homework List */}
           {isHomework && selectedSessionId ? (
             <div className="flex w-full justify-center">
               <Spinner />
@@ -131,7 +140,7 @@ const Homework = () => {
                       </div>
                       <div>
                         <Text color="error" font="medium">
-                          Deadline:{" "}
+                          {translate("Deadline", "Date limite", "الموعد النهائي")}:{" "}
                           {formatDateTimeBeautifully(homework.deadline)}
                         </Text>
                         <Text color="gray">{homework.description}</Text>
@@ -141,7 +150,11 @@ const Homework = () => {
                 ))
               ) : (
                 <div className="text-center text-gray-500">
-                  No homework found for the selected session
+                  {translate(
+                    "No homework found for the selected session",
+                    "Aucun devoir trouvé pour la session sélectionnée",
+                    "لم يتم العثور على واجبات للجلسة المحددة"
+                  )}
                 </div>
               )}
             </div>

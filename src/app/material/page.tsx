@@ -11,15 +11,13 @@ import {
 import { GoChevronDown, GoChevronRight } from "react-icons/go";
 import Spinner from "~/_components/Spinner";
 import { GrDocumentPdf } from "react-icons/gr";
+import useLanguageStore from "~/APIs/store";
 
 const Materials = () => {
   const today = new Date();
-  const formattedDate = today.toISOString().split('T')[0]; 
-  console.log("🚀 ~ Materials ~ formattedDate:", formattedDate);
+  const formattedDate = today.toISOString().split("T")[0];
 
-  const { data: dataMaterials } = useGetMaterials(formattedDate || ""); 
-  console.log("🚀 ~ Materials ~ dataMaterials:", dataMaterials);
-
+  const { data: dataMaterials } = useGetMaterials(formattedDate || "");
   const subjects = dataMaterials?.data?.content;
   const [selectedGrade, setSelectedGrade] = useState<string>("");
   const [activeMaterialId, setActiveMaterialId] = useState<number | null>(null);
@@ -30,24 +28,26 @@ const Materials = () => {
     }
   }, [subjects]);
 
+  const translate = (en: string, fr: string, ar: string) => {
+    const language = useLanguageStore.getState().language;
+    return language === "fr" ? fr : language === "ar" ? ar : en;
+  };
+
   const handleGradeChange = (gradeValue: string) => {
     setSelectedGrade(gradeValue);
   };
 
-  // Get the selected subject data
   const selectedSubject = subjects?.find(
-    (subject) => subject?.courseName === selectedGrade,
+    (subject) => subject?.courseName === selectedGrade
   );
 
   const selectedSessionId = selectedSubject?.sessionId;
-  console.log("🚀 ~ Materials ~ selectedSessionId:", selectedSessionId);
 
   const {
     data: dataSessionMaterials,
     isLoading,
     error,
   } = useGetSessionMaterials(selectedSessionId?.toString() || "");
-  console.log("🚀 ~ Materials ~ dataSessionMaterials:", dataSessionMaterials);
 
   const toggleMaterialContent = (materialId: number) => {
     if (activeMaterialId === materialId) {
@@ -61,15 +61,19 @@ const Materials = () => {
     <Container>
       <Box>
         <Text font={"bold"} size={"2xl"}>
-          Daily Plan
+          {translate("Daily Plan", "Plan Quotidien", "الخطة اليومية")}
         </Text>
         <div className="flex w-full flex-col lg:flex-row justify-center md:justify-start items-center md:items-start gap-8 rounded-xl bg-bgPrimary p-8">
-        <div className="w-full md:w-1/5">
+          <div className="w-full md:w-1/5">
             <RadioGroup.Root
               className="gap-4"
               value={selectedGrade}
               onValueChange={handleGradeChange}
-              aria-label="Grade Selection"
+              aria-label={translate(
+                "Grade Selection",
+                "Sélection du Niveau",
+                "اختيار المستوى"
+              )}
             >
               {subjects?.map((subject) => {
                 const startDate = new Date(`2024-12-10T${subject.startTime}`);
@@ -77,7 +81,7 @@ const Materials = () => {
                 const diffInMilliseconds =
                   endDate.getTime() - startDate.getTime();
                 const diffInDays = Math.ceil(
-                  diffInMilliseconds / (1000 * 60 * 60 * 24),
+                  diffInMilliseconds / (1000 * 60 * 60 * 24)
                 );
 
                 return (
@@ -94,7 +98,8 @@ const Materials = () => {
                       {subject.courseName}
                     </div>
                     <p className="text-lg font-semibold text-textPrimary group-data-[state=checked]:text-white">
-                      Durations: {diffInDays} days
+                      {translate("Duration", "Durée", "المدة")}: {diffInDays}{" "}
+                      {translate("days", "jours", "أيام")}
                     </p>
                   </RadioGroup.Item>
                 );
@@ -103,8 +108,16 @@ const Materials = () => {
           </div>
 
           <div className="w-full md:w-4/5">
-            {/* Display the selected subject's materials */}
-            {error && <p>Error loading materials: {error.message}</p>}
+            {error && (
+              <p>
+                {translate(
+                  "Error loading materials",
+                  "Erreur lors du chargement des matériaux",
+                  "خطأ في تحميل المواد"
+                )}
+                : {error.message}
+              </p>
+            )}
             {dataSessionMaterials?.data?.length ? (
               dataSessionMaterials.data.map((material, index) => (
                 <div key={material.materialId} className="mb-4">
@@ -124,7 +137,13 @@ const Materials = () => {
 
                   {activeMaterialId === material.materialId && (
                     <div className="gap-2">
-                      <Text font={"semiBold"} size={"lg"} className="mb-4">{material.description}</Text>
+                      <Text
+                        font={"semiBold"}
+                        size={"lg"}
+                        className="mb-4"
+                      >
+                        {material.description}
+                      </Text>
                       <a
                         href={material.fileLink || ""}
                         target="_blank"
@@ -132,7 +151,7 @@ const Materials = () => {
                         className="flex w-1/4 items-center justify-start gap-3 rounded-lg border border-borderPrimary bg-bgPrimary p-3 text-textPrimary transition hover:bg-bgSecondary"
                       >
                         <GrDocumentPdf size={25} />
-                        Download file
+                        {translate("Download file", "Télécharger le fichier", "تحميل الملف")}
                       </a>
                     </div>
                   )}
@@ -141,7 +160,13 @@ const Materials = () => {
             ) : isLoading ? (
               <Spinner />
             ) : (
-              <Text font={"semiBold"} size={"xl"}>No materials available for this session.</Text>
+              <Text font={"semiBold"} size={"xl"}>
+                {translate(
+                  "No materials available for this session.",
+                  "Aucun matériel disponible pour cette session.",
+                  "لا توجد مواد متاحة لهذه الجلسة."
+                )}
+              </Text>
             )}
           </div>
         </div>

@@ -21,6 +21,7 @@ import { useGetAllCommingSchedule, useGetAttendance, useGetGpa, useGetUpCommingE
 import Spinner from "~/_components/Spinner";
 import { formatDate } from "~/hooks/useFormatDate";
 import { IoTrendingDown, IoTrendingUp } from "react-icons/io5";
+import useLanguageStore from "~/APIs/store";
 const chartData = [
   { month: "January", gpa: 186, attendance: 80, class: 20, behavior: 54 },
   { month: "February", gpa: 305, attendance: 200, class: 24, behavior: 56 },
@@ -83,6 +84,11 @@ export default function Home() {
     formattedDate,
   )
 
+  const translate = (en: string, fr: string, ar: string) => {
+    const language = useLanguageStore.getState().language; // Assuming useLanguageStore manages language state
+    return language === "fr" ? fr : language === "ar" ? ar : en;
+  };
+
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
   };
@@ -114,159 +120,157 @@ export default function Home() {
   return (
     <>
       <Container>
-        <div className="flex justify-center gap-5">
-          <div className="flex-1">
-            <Box className="mb-5">
-              <Text font={"bold"} size={"xl"}>
-                Daily Plan
-              </Text>
-              <Text
-                color={"gray"}
-                font={"semiBold"}
-                size={"lg"}
-                className="mt-2"
-              >
-                Ready to excel? Answer 10 questions daily and move closer to
-                success!
-              </Text>
-              <Link
-                href="/daily-plan"
-                className="mt-2 font-semibold text-primary"
-              >
-                Start
-              </Link>
-            </Box>
-            <Box className="mb-5">
-              <Text font={"bold"} size={"xl"}>
-                Upcoming Events
-              </Text>
-              {
-                isEvents ?
-                  <div className="flex w-full justify-center">
-                    <Spinner />
-                  </div> :
-                  <>
-                    {
-                      events?.data?.content.map((event: any) => {
-                        const { dayNumber, monthName, year, time } = formatDate(event.startDate);
-
-                        return (
-                          <React.Fragment key={event.id}>
-                            <div className="mt-4 flex justify-between border-l-4 border-warning p-2 pl-4">
-                              <div>
-                                <Text font={"semiBold"} size={"lg"}>
-                                  {event.title}
-                                </Text>
-                                <Text color={"gray"} size={"lg"}>
-                                  {event?.description}
-                                </Text>
-                              </div>
-                              <div className="flex flex-col items-end">
-                                <Text font={"semiBold"} size={"lg"}>
-                                  {time}
-                                </Text>
-                                <Text font={"semiBold"} size={"lg"}>
-                                  {dayNumber} {monthName}, {year}
-                                </Text>
-                              </div>
-                            </div>
-                            {
-                              event.attendees.map((img: any) => (
-                                <div key={img.id} className="flex gap-2 items-center">
-                                <Image
-                                src={img.picture}
-                                alt="Profile Photo"
-                                width={100}
-                                height={100}
-                                />
-                                  <Text font={"semiBold"} size={"lg"}>
-                                  {img.attendeeName}
-                                </Text>
-                                </div>
-                              ))
-                            }
-                            <hr className="mt-4" />
-                          </React.Fragment>
-                        );
-                      })
-                    }
-                  </>
-              }
-            </Box>
-
-            <Box>
-              <Text font={"bold"} size={"xl"}>
-                Academic Progress
-              </Text>
-              <Text color={"gray"} font={"semiBold"} size={"lg"}>
-                This Semester
-              </Text>
-              {
-                isGpa || isAttendance ?
-                  <div className="flex w-full justify-center">
-                    <Spinner />
-                  </div> :
-                  <BoxGrid gap={4} className="py-4">
-                    <Box shadow="md">
-                      <Text font={"semiBold"} color={"gray"}>
-                        GPA
-                      </Text>
-                      <Text className="flex gap-2 items-center" font={"semiBold"}>{gpa?.currentGpa} {gpa?.currentGpa >= 2.5 ? <IoTrendingUp className="text-green-500"/> : <IoTrendingDown className="text-red-500"/>}</Text>
-                    </Box>
-                    <Box shadow="md">
-                      <Text font={"semiBold"} color={"gray"}>
-                        Attendance
-                      </Text>
-                      <Text className="flex gap-2 items-center" font={"semiBold"}>{attendance?.currentAttendance}% {attendance?.currentAttendance >= 50 ? <IoTrendingUp className="text-green-500"/> : <IoTrendingDown className="text-red-500"/>}</Text>
-                    </Box>
-                  </BoxGrid>
-              }
-            </Box>
+  <div className="flex justify-center gap-5">
+    <div className="flex-1">
+      <Box className="mb-5">
+        <Text font={"bold"} size={"xl"}>
+          {translate("Daily Plan", "Plan quotidien", "الخطة اليومية")}
+        </Text>
+        <Text color={"gray"} font={"semiBold"} size={"lg"} className="mt-2">
+          {translate(
+            "Ready to excel? Answer 10 questions daily and move closer to success!",
+            "Prêt à exceller ? Répondez à 10 questions par jour et rapprochez-vous du succès !",
+            "مستعد للتفوق؟ أجب على 10 أسئلة يوميًا واقترب من النجاح!"
+          )}
+        </Text>
+        <Link href="/daily-plan" className="mt-2 font-semibold text-primary">
+          {translate("Start", "Commencer", "ابدأ")}
+        </Link>
+      </Box>
+      <Box className="mb-5">
+        <Text font={"bold"} size={"xl"}>
+          {translate("Upcoming Events", "Événements à venir", "الأحداث القادمة")}
+        </Text>
+        {isEvents ? (
+          <div className="flex w-full justify-center">
+            <Spinner />
           </div>
-          <div>
-            <Box className="p-4 grid justify-center">
-              <div className="m-10 mt-4 flex w-fit items-center justify-center shadow-lg">
-              <CalendarDemo 
-                  selectedDate={selectedDate} 
-                  onDateSelect={handleDateSelect} 
-                />
-              </div>
-              {
-                isSchedule ? <div className="flex w-full justify-center">
-                <Spinner />
-              </div> :
-              <BoxGrid columns={1} gap={4}>
-                {
-                  schedule?.data?.map((section:any) => {
-                    return (
-                    <Box key={section.id} border="borderPrimary" shadow="none">
-                      <div className="flex justify-between">
-                        <div className="flex gap-4">
-                          <FaCircle size={25} className="text-primary" />
-                          <Text>{section.courseName}</Text>
-                          <Text>{section.teacherName}</Text>
-                        </div>
-                        <Text>{section.startTime}- {section.endTime}</Text>
-                      </div>
-                    </Box>
-                  )})
-                }
-              </BoxGrid>
-              }
-              {
-                schedule?.data?.length == 0 &&(
-                  <Box border="borderPrimary" shadow="none">
-                    No Schedule Today
-                  </Box>
-                )
-              }
-            </Box>
+        ) : (
+          <>
+            {events?.data?.content.map((event: any) => {
+              const { dayNumber, monthName, year, time } = formatDate(event.startDate);
+              return (
+                <React.Fragment key={event.id}>
+                  <div className="mt-4 flex justify-between border-l-4 border-warning p-2 pl-4">
+                    <div>
+                      <Text font={"semiBold"} size={"lg"}>
+                        {event.title}
+                      </Text>
+                      <Text color={"gray"} size={"lg"}>
+                        {event.description}
+                      </Text>
+                    </div>
+                    <div className="flex flex-col items-end">
+                      <Text font={"semiBold"} size={"lg"}>
+                        {time}
+                      </Text>
+                      <Text font={"semiBold"} size={"lg"}>
+                        {dayNumber} {monthName}, {year}
+                      </Text>
+                    </div>
+                  </div>
+                  {event.attendees.map((img: any) => (
+                    <div key={img.id} className="flex gap-2 items-center">
+                      <Image src={img.picture} alt="Profile Photo" width={100} height={100} />
+                      <Text font={"semiBold"} size={"lg"}>
+                        {img.attendeeName}
+                      </Text>
+                    </div>
+                  ))}
+                  <hr className="mt-4" />
+                </React.Fragment>
+              );
+            })}
+          </>
+        )}
+      </Box>
+
+      <Box>
+        <Text font={"bold"} size={"xl"}>
+          {translate("Academic Progress", "Progrès académique", "التقدم الأكاديمي")}
+        </Text>
+        <Text color={"gray"} font={"semiBold"} size={"lg"}>
+          {translate("This Semester", "Ce semestre", "هذا الفصل")}
+        </Text>
+        {isGpa || isAttendance ? (
+          <div className="flex w-full justify-center">
+            <Spinner />
           </div>
+        ) : (
+          <BoxGrid gap={4} className="py-4">
+            <Box shadow="md">
+              <Text font={"semiBold"} color={"gray"}>
+                {translate("GPA", "Moyenne", "المعدل")}
+              </Text>
+              <Text className="flex gap-2 items-center" font={"semiBold"}>
+                {gpa?.currentGpa}{" "}
+                {gpa?.currentGpa >= 2.5 ? (
+                  <IoTrendingUp className="text-green-500" />
+                ) : (
+                  <IoTrendingDown className="text-red-500" />
+                )}
+              </Text>
+            </Box>
+            <Box shadow="md">
+              <Text font={"semiBold"} color={"gray"}>
+                {translate("Attendance", "Présence", "الحضور")}
+              </Text>
+              <Text className="flex gap-2 items-center" font={"semiBold"}>
+                {attendance?.currentAttendance}%{" "}
+                {attendance?.currentAttendance >= 50 ? (
+                  <IoTrendingUp className="text-green-500" />
+                ) : (
+                  <IoTrendingDown className="text-red-500" />
+                )}
+              </Text>
+            </Box>
+          </BoxGrid>
+        )}
+      </Box>
+    </div>
+    <div>
+      <Box className="p-4 grid justify-center">
+        <div className="m-10 mt-4 flex w-fit items-center justify-center shadow-lg">
+          <CalendarDemo selectedDate={selectedDate} onDateSelect={handleDateSelect} />
         </div>
+        {isSchedule ? (
+          <div className="flex w-full justify-center">
+            <Spinner />
+          </div>
+        ) : (
+          <BoxGrid columns={1} gap={4}>
+            {schedule?.data?.map((section: any) => (
+              <Box key={section.id} border="borderPrimary" shadow="none">
+                <div className="flex justify-between">
+                  <div className="flex gap-4">
+                    <FaCircle size={25} className="text-primary" />
+                    <Text>{section.courseName}</Text>
+                    <Text>{section.teacherName}</Text>
+                  </div>
+                  <Text>
+                    {section.startTime} - {section.endTime}
+                  </Text>
+                </div>
+              </Box>
+            ))}
+          </BoxGrid>
+        )}
+        {schedule?.data?.length === 0 && (
+          <Box border="borderPrimary" shadow="none">
+            {translate("No Schedule Today", "Pas d'horaire aujourd'hui", "لا يوجد جدول اليوم")}
+          </Box>
+        )}
+      </Box>
+    </div>
+  </div>
         <Box className="my-5">
           <div className="flex justify-between">
             <Text font={"bold"} size={"xl"}>
-              Student performance improvement
+            {translate(
+        "Student performance improvement",
+        "Amélioration des performances des étudiants",
+        "تحسين أداء الطلاب"
+      )}
             </Text>
             <div className="flex gap-4">
               <div className="flex items-center gap-1">
@@ -350,7 +354,11 @@ export default function Home() {
         </Box>
         <Box>
           <Text font={"bold"} size={"xl"}>
-            Recent Academic Achievements
+          {translate(
+        "Recent Academic Achievements",
+        "Réalisations académiques récentes",
+        "الإنجازات الأكاديمية الحديثة"
+      )}
           </Text>
           <BoxGrid columns={6} className="m-4">
             <div className="w-fit rounded-xl border border-borderPrimary shadow-md">
