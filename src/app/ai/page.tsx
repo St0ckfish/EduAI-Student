@@ -42,10 +42,10 @@ const AI = () => {
     setCourseRegistrationId(id); // Assuming you're using the Zustand store
 }
 
-const translate = (en: string, fr: string, ar: string) => {
-  const language = useLanguageStore.getState().language; // Assuming useLanguageStore manages language state
-  return language === "fr" ? fr : language === "ar" ? ar : en;
-};
+const language = useLanguageStore((state) => state.language);
+  const translate = (en: string, fr: string, ar: string) => {
+    return language === "fr" ? fr : language === "ar" ? ar : en;
+  };
 
   if (isLoading) {
     return <Spinner/>;

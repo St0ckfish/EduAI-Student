@@ -84,8 +84,8 @@ export default function Home() {
     formattedDate,
   )
 
+  const language = useLanguageStore((state) => state.language);
   const translate = (en: string, fr: string, ar: string) => {
-    const language = useLanguageStore.getState().language; // Assuming useLanguageStore manages language state
     return language === "fr" ? fr : language === "ar" ? ar : en;
   };
 

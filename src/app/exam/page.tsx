@@ -19,10 +19,10 @@ const Exam = () => {
   const { data: dataPreviousExams, isLoading: isLoadingPreviousExams } =
     useGetAllPreviousExams();
 
-  const translate = (en: string, fr: string, ar: string) => {
-    const language = useLanguageStore.getState().language;
-    return language === "fr" ? fr : language === "ar" ? ar : en;
-  };
+    const language = useLanguageStore((state) => state.language);
+    const translate = (en: string, fr: string, ar: string) => {
+      return language === "fr" ? fr : language === "ar" ? ar : en;
+    };
 
   const renderExams = (data: any, type: "Previous" | "Upcoming") => {
     if (!data || data.length === 0) {
