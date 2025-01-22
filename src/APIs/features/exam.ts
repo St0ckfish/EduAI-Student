@@ -7,12 +7,21 @@ export const fetchAllDailyExams = async (): Promise<any> => {
     );
     return response.data;
 };
+
+export const fetchAllQuestionsExams = async (courseId: string): Promise<any> => {
+    const response = await axiosInstance.get<any>(
+        `/api/v1/daily-exam/student/${courseId}`
+    );
+    return response.data;
+};
+
 export const fetchAllExams = async (): Promise<ExamListResponse> => {
     const response = await axiosInstance.get<ExamListResponse>(
         `/api/v1/academic/educationalAffairs/exams/teacher`
     );
     return response.data;
 };
+
 export const fetchAllUpcomingExams = async (): Promise<Upcoming_Previous_Exams> => {
     const response = await axiosInstance.get<Upcoming_Previous_Exams>(
         `/api/v1/academic/educationalAffairs/exams/upcomingExamsForStudent`
@@ -50,6 +59,14 @@ export const fetchAllClasses = async (): Promise<any> => {
 export const createExam = async (formData: Partial<ExamFormData>): Promise<ExamFormData> => {
     const response = await axiosInstance.post<ExamFormData>(
       "/api/v1/academic/educationalAffairs/exams/by-teacher",
+      formData,
+    );
+    return response.data;
+  };
+
+export const sendAnswers = async (courseId: string, formData: Partial<any>): Promise<any> => {
+    const response = await axiosInstance.post<any>(
+      `/api/v1/daily-exam/student/submit-attempt/${courseId}`,
       formData,
     );
     return response.data;

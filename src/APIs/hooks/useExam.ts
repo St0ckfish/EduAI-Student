@@ -4,7 +4,7 @@ import type {
   UseQueryOptions,
 } from "@tanstack/react-query";
 import type { ExamFormData, ExamListResponse, ExamResultsResponse, Upcoming_Previous_Exams } from "../../types";
-import { createExam, fetchAllDailyExams, fetchAllExams, fetchAllPreviousExams, fetchAllUpcomingExams, fetchExamResults, putGrade } from "../features/exam";
+import { createExam, fetchAllDailyExams, fetchAllExams, fetchAllPreviousExams, fetchAllQuestionsExams, fetchAllUpcomingExams, fetchExamResults, putGrade, sendAnswers } from "../features/exam";
 import { fetchAllClasses, fetchAllCourses, fetchAllTeachers } from "../features/exam";
 
 export const useGetAllExams = (
@@ -30,6 +30,20 @@ export const useGetAllDailyExams = (
     ...options,
   });
 };
+
+export const useGetAllQuestionsExams = (
+  courseId: string,
+  options?: UseQueryOptions<any, Error>,
+) => {
+  return useQuery<any, Error>({
+    queryKey: ["Questions", courseId],
+    queryFn: () => fetchAllQuestionsExams(courseId),
+    enabled: Boolean(courseId),
+    staleTime: 1000 * 60 * 5,
+    ...options,
+  });
+};
+
 export const useGetAllUpcomingExams = (
   options?: UseQueryOptions<Upcoming_Previous_Exams, Error>,
 ) => {
@@ -89,6 +103,19 @@ export const useCreateExam = (
     mutationFn: createExam,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["createExam"] });
+    },
+    ...options,
+  });
+};
+
+export const useSendAnswer = (
+  options?: UseMutationOptions<any, Error, { courseId: string; formData: Partial<any> }>,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation<any, Error, { courseId: string; formData: Partial<any> }>({
+    mutationFn: ({ courseId, formData }) => sendAnswers(courseId, formData),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["answer"] });
     },
     ...options,
   });
