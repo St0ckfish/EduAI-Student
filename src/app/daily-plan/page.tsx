@@ -21,6 +21,7 @@ const DailyPlan = () => {
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
   const [isAnswered, setIsAnswered] = useState<boolean>(false);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [writtenAnswer, setWrittenAnswer] = useState<string>("");
   const [correctAnswer, setCorrectAnswer] = useState<string | null>(null);
   const [correctAnswersCount, setCorrectAnswersCount] = useState<number>(0);
   const [isTestCompleted, setIsTestCompleted] = useState<boolean>(false);
@@ -52,6 +53,7 @@ const DailyPlan = () => {
     setCurrentQuestion(0);
     setIsAnswered(false);
     setSelectedAnswer(null);
+    setWrittenAnswer("");
     setCorrectAnswer(null);
     setCorrectAnswersCount(0);
     setIsTestCompleted(false);
@@ -59,15 +61,20 @@ const DailyPlan = () => {
   };
 
   const handleAnswer = () => {
-    if (!questions?.data || !selectedAnswer) return;
+    if (!questions?.data) return;
 
     const currentQuestionData = questions.data[currentQuestion];
-    const isCorrect = selectedAnswer === currentQuestionData.correctAnswer;
+    const userAnswer = currentQuestionData.questionType === 'WRITTEN' ? writtenAnswer : selectedAnswer;
+    
+    if (!userAnswer) return;
 
-    // Add the answer to our answers array
+    const isCorrect = currentQuestionData.questionType === 'WRITTEN' 
+      ? userAnswer.toLowerCase().trim() === currentQuestionData.correctAnswer.toLowerCase().trim()
+      : userAnswer === currentQuestionData.correctAnswer;
+
     setAnswers(prev => [...prev, {
       questionId: currentQuestionData.id.toString(),
-      answer: selectedAnswer
+      answer: userAnswer
     }]);
 
     if (isCorrect) {
@@ -85,10 +92,10 @@ const DailyPlan = () => {
       setCurrentQuestion((prev) => prev + 1);
       setIsAnswered(false);
       setSelectedAnswer(null);
+      setWrittenAnswer("");
       setCorrectAnswer(null);
     } else {
       setIsTestCompleted(true);
-      // Send all answers when the exam is completed
       if (selectedExamId) {
         sendAnswers(
           { courseId: selectedExamId, formData: answers },
@@ -114,6 +121,7 @@ const DailyPlan = () => {
       setCurrentQuestion(0);
       setIsAnswered(false);
       setSelectedAnswer(null);
+      setWrittenAnswer("");
       setCorrectAnswer(null);
       setCorrectAnswersCount(0);
       setIsTestCompleted(false);
@@ -121,6 +129,83 @@ const DailyPlan = () => {
     } else {
       toast.info("No more exams available.");
     }
+  };
+
+  const getQuestionOptions = (questionData: any) => {
+    if (questionData.questionType === 'TF') {
+      return ['صح', 'خطأ'];
+    }
+    return questionData.options;
+  };
+
+  const renderQuestionInput = (questionData: any) => {
+    if (questionData.questionType === 'WRITTEN') {
+      return (
+        <div className="mb-20 flex flex-col gap-4">
+          <textarea
+            value={writtenAnswer}
+            onChange={(e) => setWrittenAnswer(e.target.value)}
+            disabled={isAnswered}
+            className="w-full min-h-[120px] p-4 rounded-lg border-2 border-borderPrimary focus:border-primary focus:outline-none disabled:bg-bgSecondary"
+            placeholder="Type your answer here..."
+          />
+          {isAnswered && (
+            <div className="mt-4 p-4 rounded-lg bg-lightGray">
+              <Text font="bold" size="lg" className="mb-2">
+                Correct Answer:
+              </Text>
+              <Text size="md">{correctAnswer}</Text>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <div className="mb-20 flex flex-col gap-4">
+        <RadioGroup.Root
+          className="gap-4"
+          aria-label="Answer Choices"
+          value={selectedAnswer ?? ""}
+          onValueChange={(value) => setSelectedAnswer(value)}
+        >
+          {getQuestionOptions(questionData).map((option: string, index: number) => (
+            <RadioGroup.Item
+              key={index}
+              value={option}
+              className={`group mt-4 flex h-16 w-full items-center gap-4 rounded-lg border-2 px-4 text-textPrimary transition focus-visible:ring focus-visible:ring-blue-200 focus-visible:ring-opacity-75 ${
+                isAnswered
+                  ? option === correctAnswer
+                    ? "border-success"
+                    : option === selectedAnswer
+                      ? "border-error"
+                      : "border-borderPrimary"
+                  : "data-[state=checked]:border-primary"
+              } ${isAnswered ? "cursor-not-allowed" : ""}`}
+              disabled={isAnswered}
+            >
+              <div className="flex w-full items-center justify-between">
+                <div className="flex gap-1">
+                  <Text size={"md"}>{String.fromCharCode(65 + index)})</Text>
+                  <Text size={"md"}>{option}</Text>
+                </div>
+                <div className="relative h-6 w-6">
+                  {isAnswered ? (
+                    option === correctAnswer ? (
+                      <AiOutlineCheckCircle className="h-full w-full text-success" />
+                    ) : option === selectedAnswer ? (
+                      <AiOutlineCloseCircle className="h-full w-full text-error" />
+                    ) : null
+                  ) : (
+                    <div className="h-full w-full rounded-full border-2 border-borderPrimary group-data-[state=checked]:border-primary"></div>
+                  )}
+                </div>
+              </div>
+            </RadioGroup.Item>
+          ))}
+        </RadioGroup.Root>
+      </div>
+    );
   };
 
   if (isExamsLoading || isQuestionsLoading || isSending) {
@@ -246,55 +331,18 @@ const DailyPlan = () => {
                       </Text>
                     </div>
 
-                    <div className="mb-20 flex flex-col gap-4">
-                      <RadioGroup.Root
-                        className="gap-4"
-                        aria-label="Answer Choices"
-                        value={selectedAnswer ?? ""}
-                        onValueChange={(value) => setSelectedAnswer(value)}
-                      >
-                        {questions.data[currentQuestion].options.map((option: string, index: number) => (
-                          <RadioGroup.Item
-                            key={index}
-                            value={option}
-                            className={`group mt-4 flex h-16 w-full items-center gap-4 rounded-lg border-2 px-4 text-textPrimary transition focus-visible:ring focus-visible:ring-blue-200 focus-visible:ring-opacity-75 ${
-                              isAnswered
-                                ? option === correctAnswer
-                                  ? "border-success"
-                                  : option === selectedAnswer
-                                    ? "border-error"
-                                    : "border-borderPrimary"
-                                : "data-[state=checked]:border-primary"
-                            } ${isAnswered ? "cursor-not-allowed" : ""}`}
-                            disabled={isAnswered}
-                          >
-                            <div className="flex w-full items-center justify-between">
-                              <div className="flex gap-1">
-                                <Text size={"md"}>{String.fromCharCode(65 + index)})</Text>
-                                <Text size={"md"}>{option}</Text>
-                              </div>
-                              <div className="relative h-6 w-6">
-                                {isAnswered ? (
-                                  option === correctAnswer ? (
-                                    <AiOutlineCheckCircle className="h-full w-full text-success" />
-                                  ) : option === selectedAnswer ? (
-                                    <AiOutlineCloseCircle className="h-full w-full text-error" />
-                                  ) : null
-                                ) : (
-                                  <div className="h-full w-full rounded-full border-2 border-borderPrimary group-data-[state=checked]:border-primary"></div>
-                                )}
-                              </div>
-                            </div>
-                          </RadioGroup.Item>
-                        ))}
-                      </RadioGroup.Root>
-                    </div>
+                    {renderQuestionInput(questions.data[currentQuestion])}
                   </div>
                 )}
                 {isAnswered ? (
                   <Button onClick={handleNextQuestion}>Next Question</Button>
                 ) : (
-                  <Button onClick={handleAnswer} disabled={!selectedAnswer}>
+                  <Button 
+                    onClick={handleAnswer} 
+                    disabled={questions?.data[currentQuestion].questionType === 'WRITTEN' 
+                      ? !writtenAnswer.trim() 
+                      : !selectedAnswer}
+                  >
                     Answer
                   </Button>
                 )}
