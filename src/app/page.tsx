@@ -124,7 +124,7 @@ export default function Home() {
     <div className="flex-1">
       <Box className="mb-5">
         <Text font={"bold"} size={"xl"}>
-          {translate("Daily Plan", "Plan quotidien", "الخطة اليومية")}
+          {translate("Daily Exam", "examen quotidien", "الاختبار اليومية")}
         </Text>
         <Text color={"gray"} font={"semiBold"} size={"lg"} className="mt-2">
           {translate(
