@@ -133,11 +133,7 @@ const AiChat = () => {
                                     }`}>
                                         <p className="text-sm">{message.content}</p>
                                     </div>
-                                    {message.timestamp && (
-                                        <span className="text-xs text-gray-500">
-                                            {new Date(message.timestamp).toLocaleTimeString()}
-                                        </span>
-                                    )}
+                                    
                                 </div>
                             </div>
                         ))}
