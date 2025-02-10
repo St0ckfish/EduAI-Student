@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import type {
   UseQueryOptions,
 } from "@tanstack/react-query";
-import { fetchAttendance, fetchGpa, fetchUpCommingEvents, fetchUpCommingSchedule } from "../features/home";
+import { fetchAttendance, fetchDailyPlans, fetchGpa, fetchUpCommingEvents, fetchUpCommingSchedule } from "../features/home";
 
 
 export const useGetGpa = (
@@ -31,6 +31,17 @@ export const useGetUpCommingEvents = (
   return useQuery<any, Error>({
     queryKey: ["upCommingEvents"],
     queryFn: () => fetchUpCommingEvents(),
+    staleTime: 1000 * 60 * 5,
+    ...options,
+  });
+};
+export const useGetDailyPlans = (
+  studentId: string,
+  options?: UseQueryOptions<any, Error>,
+) => {
+  return useQuery<any, Error>({
+    queryKey: ["plans", studentId],
+    queryFn: () => fetchDailyPlans(studentId),
     staleTime: 1000 * 60 * 5,
     ...options,
   });

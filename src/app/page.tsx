@@ -5,10 +5,10 @@ import BoxGrid from "~/_components/BoxGrid";
 import Container from "~/_components/Container";
 import { Text } from "~/_components/Text";
 import { Calendar } from "~/components/ui/calendar";
-import { FaCircle } from "react-icons/fa";
+import { FaCircle, FaDownload, FaEllipsisV } from "react-icons/fa";
 import Image from "next/image";
 import { format } from "date-fns";
-import { TrendingUp } from "lucide-react"
+import { BookOpen, Clock, TrendingUp } from "lucide-react"
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
 import {
   type ChartConfig,
@@ -17,11 +17,11 @@ import {
   ChartTooltipContent,
 } from "~/components/ui/chart"
 import Link from "next/link";
-import { useGetAllCommingSchedule, useGetAttendance, useGetGpa, useGetUpCommingEvents } from "~/APIs/hooks/useHome";
+import { useGetAllCommingSchedule, useGetAttendance, useGetGpa, useGetUpCommingEvents, useGetDailyPlans } from "~/APIs/hooks/useHome";
 import Spinner from "~/_components/Spinner";
 import { formatDate } from "~/hooks/useFormatDate";
 import { IoTrendingDown, IoTrendingUp } from "react-icons/io5";
-import useLanguageStore from "~/APIs/store";
+import useLanguageStore, { useUserDataStore } from "~/APIs/store";
 const chartData = [
   { month: "January", gpa: 186, attendance: 80, class: 20, behavior: 54 },
   { month: "February", gpa: 305, attendance: 200, class: 24, behavior: 56 },
@@ -72,8 +72,13 @@ export default function Home() {
       />
     );
   }
+  const userData = useUserDataStore.getState().userData;
+  const ID = userData.id
+  console.log("id",ID);
+  
   const [selectedDate, setSelectedDate] = React.useState<Date>(new Date());
   const { data: gpa, isLoading: isGpa } = useGetGpa()
+  const { data: dailyPlans, isLoading: isDaily } = useGetDailyPlans(ID)
   const { data: attendance, isLoading: isAttendance } = useGetAttendance()
   const { data: events, isLoading: isEvents } = useGetUpCommingEvents()
   const formattedDate = React.useMemo(
@@ -183,6 +188,61 @@ export default function Home() {
             })}
           </>
         )}
+      </Box>
+      <Box className="mb-5">
+      <Text font={"bold"} size={"xl"}>
+          {translate("Daily Plan", "Plan quotidien", "الخطة اليومية")}
+        </Text>
+        <div className="grid gap-6">
+        {dailyPlans?.map((day: any, dayIndex: number) => (
+          <div 
+            key={day.day} 
+            className="bg-bgPrimary rounded-lg shadow-md overflow-hidden border border-borderPrimary"
+          >
+            <div className="bg-primary text-white px-6 py-3">
+              <h3 className="text-xl font-semibold">{day.day}</h3>
+            </div>
+
+            <div className="divide-y divide-borderPrimary">
+              {day.time_slots.map((slot: any, slotIndex: number) => (
+                <div 
+                  key={`${day.day}-${slotIndex}`} 
+                  className={`p-4 transition-colors ${
+                    slot.courseName === "استراحة" 
+                      ? "bg-bgPrimary" 
+                      : "hover:bg-blue-50"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      {slot.courseName === "استراحة" ? (
+                        <Clock className="w-5 h-5 text-textSecondary" />
+                      ) : (
+                        <BookOpen className="w-5 h-5 text-primary" />
+                      )}
+                      <div>
+                        <h4 className="font-medium text-textSecondary">
+                          {slot.courseName}
+                        </h4>
+                        {slot.courseName !== "استراحة" && (
+                          <p className="text-sm text-textSecondary">
+                            {slot.lessonName}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="px-3 py-1 text-sm font-medium text-black bg-blue-100 rounded-full">
+                        {slot.duration} min
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
       </Box>
 
       <Box>

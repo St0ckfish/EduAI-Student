@@ -18,6 +18,12 @@ export const fetchUpCommingEvents = async (): Promise<any> => {
   );
   return response.data;
 };
+export const fetchDailyPlans = async (studentId: string): Promise<any> => {
+  const response = await axiosInstance.get<any>(
+    `/api/v1/management/planer/last-student-planer/${studentId}`,
+  );
+  return response.data;
+};
 export const fetchUpCommingSchedule = async (date: string): Promise<any> => {
   const response = await axiosInstance.get<any>(
     `/api/v1/student-study/schedule-at-date?date=${date}`,
