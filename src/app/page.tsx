@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "~/_components/Box";
 import BoxGrid from "~/_components/BoxGrid";
 import Container from "~/_components/Container";
@@ -8,7 +8,7 @@ import { Calendar } from "~/components/ui/calendar";
 import { FaCircle, FaDownload, FaEllipsisV } from "react-icons/fa";
 import Image from "next/image";
 import { format } from "date-fns";
-import { BookOpen, Clock, TrendingUp } from "lucide-react"
+import { BookOpen, ChevronDown, Clock, TrendingUp } from "lucide-react"
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
 import {
   type ChartConfig,
@@ -50,6 +50,7 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export default function Home() {
+  const [isOpen, setIsOpen] = useState(false);
   function CalendarDemo({
     selectedDate,
     onDateSelect,
@@ -190,58 +191,73 @@ export default function Home() {
         )}
       </Box>
       <Box className="mb-5">
-      <Text font={"bold"} size={"xl"}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full p-4 flex items-center justify-between bg-primary text-white rounded-t-lg"
+      >
+        <Text font="bold" size="xl" className="text-white">
           {translate("Daily Plan", "Plan quotidien", "الخطة اليومية")}
         </Text>
-        <div className="grid gap-6">
-        {dailyPlans?.map((day: any, dayIndex: number) => (
-          <div 
-            key={day.day} 
-            className="bg-bgPrimary rounded-lg shadow-md overflow-hidden border border-borderPrimary"
-          >
-            <div className="bg-primary text-white px-6 py-3">
-              <h3 className="text-xl font-semibold">{day.day}</h3>
-            </div>
+        <ChevronDown 
+          className={`w-6 h-6 transition-transform duration-200 ${
+            isOpen ? 'transform rotate-180' : ''
+          }`}
+        />
+      </button>
 
-            <div className="divide-y divide-borderPrimary">
-              {day.time_slots.map((slot: any, slotIndex: number) => (
-                <div 
-                  key={`${day.day}-${slotIndex}`} 
-                  className={`p-4 transition-colors ${
-                    slot.courseName === "استراحة" 
-                      ? "bg-bgPrimary" 
-                      : "hover:bg-blue-50"
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      {slot.courseName === "استراحة" ? (
-                        <Clock className="w-5 h-5 text-textSecondary" />
-                      ) : (
-                        <BookOpen className="w-5 h-5 text-primary" />
-                      )}
-                      <div>
-                        <h4 className="font-medium text-textSecondary">
-                          {slot.courseName}
-                        </h4>
-                        {slot.courseName !== "استراحة" && (
-                          <p className="text-sm text-textSecondary">
-                            {slot.lessonName}
-                          </p>
+      <div className={`transition-all duration-200 ${
+        isOpen ? 'max-h-full opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
+      }`}>
+        <div className="grid gap-6 p-4">
+          {dailyPlans?.map((day: any, dayIndex: number) => (
+            <div 
+              key={day.day} 
+              className="bg-bgPrimary rounded-lg shadow-md overflow-hidden border border-borderPrimary"
+            >
+              <div className="bg-primary text-white px-6 py-3">
+                <h3 className="text-xl font-semibold">{day.day}</h3>
+              </div>
+
+              <div className="divide-y divide-borderPrimary">
+                {day.time_slots.map((slot: any, slotIndex: number) => (
+                  <div 
+                    key={`${day.day}-${slotIndex}`} 
+                    className={`p-4 transition-colors ${
+                      slot.courseName === "استراحة" 
+                        ? "bg-bgPrimary" 
+                        : "hover:bg-blue-50"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        {slot.courseName === "استراحة" ? (
+                          <Clock className="w-5 h-5 text-textSecondary" />
+                        ) : (
+                          <BookOpen className="w-5 h-5 text-primary" />
                         )}
+                        <div>
+                          <h4 className="font-medium text-textSecondary">
+                            {slot.courseName}
+                          </h4>
+                          {slot.courseName !== "استراحة" && (
+                            <p className="text-sm text-textSecondary">
+                              {slot.lessonName}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center">
+                        <span className="px-3 py-1 text-sm font-medium text-black bg-blue-100 rounded-full">
+                          {slot.duration} min
+                        </span>
                       </div>
                     </div>
-                    <div className="flex items-center">
-                      <span className="px-3 py-1 text-sm font-medium text-black bg-blue-100 rounded-full">
-                        {slot.duration} min
-                      </span>
-                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
       </Box>
 
