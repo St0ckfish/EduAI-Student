@@ -50,7 +50,15 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export default function Home() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [openDays, setOpenDays] = useState<Record<string | number, boolean>>({});
+
+  // Toggle function for individual days
+  const toggleDay = (day: string | number) => {
+    setOpenDays(prev => ({
+      ...prev,
+      [day]: !prev[day]
+    }));
+  };
   function CalendarDemo({
     selectedDate,
     onDateSelect,
@@ -191,40 +199,38 @@ export default function Home() {
         )}
       </Box>
       <Box className="mb-5">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full p-4 flex items-center justify-between bg-primary text-white rounded-t-lg"
-      >
-        <Text font="bold" size="xl" className="text-white">
-          {translate("Daily Plan", "Plan quotidien", "الخطة اليومية")}
-        </Text>
-        <ChevronDown 
-          className={`w-6 h-6 transition-transform duration-200 ${
-            isOpen ? 'transform rotate-180' : ''
-          }`}
-        />
-      </button>
-
-      <div className={`transition-all duration-200 ${
-        isOpen ? 'max-h-full opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
-      }`}>
-        <div className="grid gap-6 p-4">
-          {dailyPlans?.map((day: any, dayIndex: number) => (
-            <div 
-              key={day.day} 
-              className="bg-bgPrimary rounded-lg shadow-md overflow-hidden border border-borderPrimary"
+      <Text font="bold" size="xl" className="text-white">           {translate("Daily Plan", "Plan quotidien", "الخطة اليومية")}         </Text>
+      <div className="grid gap-6 p-4">
+        
+        {dailyPlans?.map((day: any, dayIndex: number) => (
+          <div
+            key={day.day}
+            className="bg-bgPrimary rounded-lg shadow-md overflow-hidden border border-borderPrimary"
+          >
+            <button
+              onClick={() => toggleDay(day.day)}
+              className="w-full p-4 flex items-center justify-between bg-primary text-white"
             >
-              <div className="bg-primary text-white px-6 py-3">
-                <h3 className="text-xl font-semibold">{day.day}</h3>
-              </div>
+              <Text font="bold" size="xl" className="text-white">
+                {day.day}
+              </Text>
+              <ChevronDown
+                className={`w-6 h-6 transition-transform duration-200 ${
+                  openDays[day.day] ? 'transform rotate-180' : ''
+                }`}
+              />
+            </button>
 
+            <div className={`transition-all duration-200 ${
+              openDays[day.day] ? 'max-h-full opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
+            }`}>
               <div className="divide-y divide-borderPrimary">
                 {day.time_slots.map((slot: any, slotIndex: number) => (
-                  <div 
-                    key={`${day.day}-${slotIndex}`} 
+                  <div
+                    key={`${day.day}-${slotIndex}`}
                     className={`p-4 transition-colors ${
-                      slot.courseName === "استراحة" 
-                        ? "bg-bgPrimary" 
+                      slot.courseName === "استراحة"
+                        ? "bg-bgPrimary"
                         : "hover:bg-blue-50"
                     }`}
                   >
@@ -256,11 +262,10 @@ export default function Home() {
                 ))}
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
-      </Box>
-
+    </Box>
       <Box>
         <Text font={"bold"} size={"xl"}>
           {translate("Academic Progress", "Progrès académique", "التقدم الأكاديمي")}
