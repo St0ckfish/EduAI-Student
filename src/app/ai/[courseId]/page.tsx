@@ -10,7 +10,7 @@ import { useCourseStore } from '~/APIs/store';
 const AiChat = () => {
     const { courseId } = useParams();
     const [question, setQuestion] = useState('');
-    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const messagesStartRef = useRef<HTMLDivElement>(null);
     const chatContainerRef = useRef<HTMLDivElement>(null);
     
     interface ChatMessage {
@@ -26,13 +26,13 @@ const AiChat = () => {
     const { isLoading } = useLoadSubject(courseId as string);
     const { mutate: askQuestion, isPending: isLoadingQuestion } = useAskQuestion();
 
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const scrollToTop = () => {
+        messagesStartRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
-    // Effect to handle auto-scrolling
+    // Effect to handle auto-scrolling to the top (newest messages)
     useEffect(() => {
-        scrollToBottom();
+        scrollToTop();
     }, [chatHistory, isLoadingQuestion]);
 
     // Effect to load historical chat messages
@@ -51,18 +51,20 @@ const AiChat = () => {
                 }
             ])).flat();
 
-            setChatHistory(formattedHistory);
+            // Set history in reverse order
+            setChatHistory(formattedHistory.reverse());
         }
     }, [historicalChat]);
 
     const handleSendQuestion = () => {
         if (!question.trim()) return;
 
-        setChatHistory(prev => [...prev, {
+        // Add new messages to the beginning of the array
+        setChatHistory(prev => [{
             type: 'user',
             content: question,
             timestamp: new Date().toISOString()
-        }]);
+        }, ...prev]);
 
         askQuestion({
             courseId: courseId,
@@ -71,19 +73,19 @@ const AiChat = () => {
             onSuccess: (response) => {
                 const parsedResponse = JSON.parse(response.response);
                 
-                setChatHistory(prev => [...prev, {
+                setChatHistory(prev => [{
                     type: 'ai',
                     content: parsedResponse.response,
                     timestamp: response.askedAt
-                }]);
+                }, ...prev]);
 
                 setQuestion('');
             },
             onError: (error) => {
-                setChatHistory(prev => [...prev, {
+                setChatHistory(prev => [{
                     type: 'error',
                     content: 'Sorry, there was an error processing your request.'
-                }]);
+                }, ...prev]);
             }
         });
     };
@@ -99,21 +101,43 @@ const AiChat = () => {
         <Container>
             <div className="h-[800px] flex">
                 <div className="flex-1 flex flex-col">
+                    <div className="border-t p-4">
+                        <div className="flex items-center gap-2 bg-bgPrimary rounded-lg border p-2">
+                            <input
+                                type="text"
+                                value={question}
+                                onChange={(e) => setQuestion(e.target.value)}
+                                onKeyPress={handleKeyPress}
+                                placeholder="Write a message"
+                                className="flex-1 outline-none text-sm"
+                                disabled={isLoadingQuestion}
+                            />
+                            <button 
+                                className={`p-2 bg-primary rounded-full ${isLoadingQuestion ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary-dark'}`}
+                                onClick={handleSendQuestion}
+                                disabled={isLoadingQuestion}
+                            >
+                                <Send className="w-4 h-4 text-white" />
+                            </button>
+                        </div>
+                    </div>
+
                     <div 
                         ref={chatContainerRef}
-                        className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth"
+                        className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth flex flex-col-reverse"
                     >
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                                <MessageCircle className="w-5 h-5 text-white" />
+                        {/* Reference for scrolling to newest messages */}
+                        <div ref={messagesStartRef} />
+                        
+                        {isLoadingQuestion && (
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center animate-pulse">
+                                    <MessageCircle className="w-5 h-5 text-white" />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <p className="text-sm text-gray-500">Thinking...</p>
+                                </div>
                             </div>
-                            <div className="flex flex-col gap-1">
-                                <p className="text-lg">Hello! How can I assist you today? 👋</p>
-                            </div>
-                        </div>
-
-                        {isLoadingHistory && (
-                            <Spinner/>
                         )}
 
                         {chatHistory.map((message, index) => (
@@ -133,44 +157,21 @@ const AiChat = () => {
                                     }`}>
                                         <p className="text-sm">{message.content}</p>
                                     </div>
-                                    
                                 </div>
                             </div>
                         ))}
 
-                        {isLoadingQuestion && (
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center animate-pulse">
-                                    <MessageCircle className="w-5 h-5 text-white" />
-                                </div>
-                                <div className="flex flex-col gap-1">
-                                    <p className="text-sm text-gray-500">Thinking...</p>
-                                </div>
-                            </div>
+                        {isLoadingHistory && (
+                            <Spinner/>
                         )}
-                        
-                        {/* Invisible div for scrolling reference */}
-                        <div ref={messagesEndRef} />
-                    </div>
 
-                    <div className="border-t p-4">
-                        <div className="flex items-center gap-2 bg-bgPrimary rounded-lg border p-2">
-                            <input
-                                type="text"
-                                value={question}
-                                onChange={(e) => setQuestion(e.target.value)}
-                                onKeyPress={handleKeyPress}
-                                placeholder="Write a message"
-                                className="flex-1 outline-none text-sm"
-                                disabled={isLoadingQuestion}
-                            />
-                            <button 
-                                className={`p-2 bg-primary rounded-full ${isLoadingQuestion ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary-dark'}`}
-                                onClick={handleSendQuestion}
-                                disabled={isLoadingQuestion}
-                            >
-                                <Send className="w-4 h-4 text-white" />
-                            </button>
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+                                <MessageCircle className="w-5 h-5 text-white" />
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <p className="text-lg">Hello! How can I assist you today? 👋</p>
+                            </div>
                         </div>
                     </div>
                 </div>
